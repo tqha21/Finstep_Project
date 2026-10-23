@@ -28,14 +28,14 @@ Kế hoạch tính theo tuần tương đối, 20–25 giờ/tuần. Lịch 19/1
 - [x] Docker workflow và SQL integrity test; CI khai báo cùng lệnh test.
 - [ ] Phỏng vấn và xác nhận giả thuyết với người dùng thật.
 - [x] Khung Spring Boot, health/readiness và Flyway integration.
-- [ ] Session auth và API nghiệp vụ.
+- [x] Session auth JDBC, xác minh/reset email, CSRF, rate limit và API hồ sơ.
+- [ ] API tài chính: ví/danh mục/giao dịch/ngân sách/báo cáo.
 - [ ] Frontend và toàn bộ release gates.
 
 ## Sprint kỹ thuật tiếp theo
 
-1. Khởi tạo Spring Boot Java 21 + Flyway + Actuator, health không lộ thông tin nhạy cảm.
-2. Session auth, CSRF, BCrypt/Argon2id, email verify/reset với token hash và thời hạn.
-3. Endpoint ví và danh mục; principal-scoped queries; test hai người dùng.
-4. Thu/chi/chuyển ví, idempotency transactional, kiểm thử concurrent retry và báo cáo tháng.
+1. Endpoint ví và danh mục; principal-scoped queries; test chống IDOR hai người dùng.
+2. Thu/chi/chuyển ví, idempotency transactional, kiểm thử concurrent retry và báo cáo tháng.
+3. Tích hợp frontend same-origin và cấu hình SMTP thật trên staging; kiểm thử TLS, proxy và session qua HTTPS.
 
 Không triển khai ngân hàng/AI/PWA trước khi luồng nhập liệu, bảo mật và dữ liệu chính xác. Mỗi milestone chỉ hoàn thành sau khi có kiểm thử phù hợp.

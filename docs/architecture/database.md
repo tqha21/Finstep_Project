@@ -33,10 +33,10 @@ Composite FK ngăn liên kết dữ liệu hai chủ khác nhau. Đây KHÔNG ph
 
 Idempotency: dùng namespace chung `(user_id,key)`, hash request canonical SHA-256, tạo record cùng giao dịch trong một transaction DB. Replay cùng hash trả resource cũ; khác hash trả 409. Không xóa key tự động khi chưa có chính sách retention. Bảng đã có, service/replay/concurrency test chưa triển khai.
 
-Không xóa cascade lịch sử vô tình; xóa tài khoản cần workflow tường minh, thứ tự xóa dependency, revoke session và chính sách backup. Các bảng session, token hash, feedback, audit sẽ được thêm qua migration tiếp theo khi module tương ứng được xây dựng. Không giả lập authentication bằng password hash fixture.
+Không xóa cascade lịch sử vô tình; xóa tài khoản cần workflow tường minh, thứ tự xóa dependency, revoke session và chính sách backup. Migration V2 đã thêm bảng Spring Session JDBC, identity_tokens, auth_rate_limits và users.auth_version. Feedback/audit chưa triển khai. Không giả lập authentication bằng password hash fixture.
 
 ## Đã kiểm thử / còn thiếu
 
 SQL test chạy trên PostgreSQL thật: ví 2.000.000 + thu 5.000.000 − chi 1.500.000 − chuyển 1.000.000 = 4.500.000; tổng hai ví bảo toàn; edit/delete thay số dư; reject cross-owner FK, loại danh mục sai, amount 0, self-transfer, income budget và xóa ví có lịch sử.
 
-Còn cần: kiểm thử HTTP authorization, cạnh tranh/idempotency, budget report theo timezone, archive/date validation, authentication. Migration qua Flyway và chạy lại không thay đổi được kiểm tra bằng integration test. DB constraint không thay thế các kiểm thử này.
+Còn cần: kiểm thử HTTP authorization, cạnh tranh/idempotency, budget report theo timezone, archive/date validation, các kiểm thử tài chính cấp HTTP. Authentication đã có integration tests. Migration qua Flyway và chạy lại không thay đổi được kiểm tra bằng integration test. DB constraint không thay thế các kiểm thử này.

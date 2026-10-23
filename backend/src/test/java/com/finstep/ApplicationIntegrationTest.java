@@ -2,6 +2,7 @@ package com.finstep;
 
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -15,6 +16,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Testcontainers
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ApplicationIntegrationTest {
     @Container
@@ -44,9 +46,9 @@ class ApplicationIntegrationTest {
     @Test
     void unauthenticatedRequestsCannotReadFinancialDataOrManagementDetails() {
         assertThat(http.getForEntity("/api/v1/wallets", String.class).getStatusCode())
-            .isEqualTo(HttpStatus.FORBIDDEN);
+            .isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(http.getForEntity("/actuator/env", String.class).getStatusCode())
-            .isEqualTo(HttpStatus.FORBIDDEN);
+            .isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(http.postForEntity("/api/v1/transactions", "{}", String.class).getStatusCode())
             .isEqualTo(HttpStatus.FORBIDDEN);
     }

@@ -5,6 +5,22 @@ spring:
     url: ${DB_URL:jdbc:postgresql://127.0.0.1:5432/finstep}
     username: ${DB_USERNAME:finstep}
     password: ${DB_PASSWORD}
+  mail:
+    host: ${SMTP_HOST:127.0.0.1}
+    port: ${SMTP_PORT:1025}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail.smtp.auth: ${SMTP_AUTH:false}
+      mail.smtp.starttls.enable: ${SMTP_STARTTLS:false}
+      mail.smtp.starttls.required: ${SMTP_STARTTLS:false}
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 5000
+      mail.smtp.writetimeout: 5000
+  session:
+    timeout: 30m
+    jdbc:
+      initialize-schema: never
   flyway:
     # Never silently baseline a nonempty unmanaged schema.
     baseline-on-migrate: false
@@ -12,6 +28,12 @@ spring:
 server:
   address: ${SERVER_ADDRESS:127.0.0.1}
   port: ${PORT:8080}
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: ${SESSION_COOKIE_SECURE:true}
+        same-site: lax
   error:
     include-message: never
     include-stacktrace: never
@@ -28,3 +50,7 @@ management:
       group:
         readiness:
           include: readinessState,db
+
+app:
+  mail:
+    from: ${MAIL_FROM:no-reply@finstep.local}
