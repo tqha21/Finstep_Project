@@ -1,6 +1,6 @@
 # API và trạng thái triển khai — `/api/v1`
 
-Đã triển khai nhóm identity: register, login, logout, verify-email, resend-verification, forgot-password, reset-password, csrf và GET /me. Xem [hợp đồng identity](identity.md). Đã triển khai GET/POST/PATCH ví và danh mục, GET chi tiết và POST /categories/defaults; xem [hợp đồng ví/danh mục](wallets-categories.md). Đã triển khai thu/chi/chuyển ví, GET chi tiết, PUT sửa toàn bộ, DELETE soft delete và lịch sử cursor; xem [hợp đồng ledger](ledger.md). Đã triển khai ngân sách tháng, báo cáo tổng hợp, CSV và PATCH hồ sơ tên/múi giờ; xem [hợp đồng báo cáo](reporting.md). Feedback và xóa tài khoản vẫn là thiết kế.
+Đã triển khai nhóm identity: register, login, logout, verify-email, resend-verification, forgot-password, reset-password, csrf và GET /me. Xem [hợp đồng identity](identity.md). Đã triển khai GET/POST/PATCH ví và danh mục, GET chi tiết và POST /categories/defaults; xem [hợp đồng ví/danh mục](wallets-categories.md). Đã triển khai thu/chi/chuyển ví, GET chi tiết, PUT sửa toàn bộ, DELETE soft delete và lịch sử cursor; xem [hợp đồng ledger](ledger.md). Đã triển khai ngân sách tháng, báo cáo tổng hợp, CSV và PATCH hồ sơ tên/múi giờ; xem [hợp đồng báo cáo](reporting.md). Đã triển khai GET /me/export và DELETE /me có mật khẩu/xác nhận; xem [hợp đồng privacy](privacy.md). Feedback vẫn là thiết kế.
 
 Session cookie HttpOnly/Secure/SameSite và CSRF token cho mutation. Owner lấy từ session. JSON số tiền là chuỗi nguyên dương VND; thời gian ISO-8601 có offset. Lỗi dùng Problem Details, không lộ stack trace hay dữ liệu tài chính.
 
@@ -19,8 +19,9 @@ Session cookie HttpOnly/Secure/SameSite và CSRF token cho mutation. Owner lấy
 | GET/PUT /budgets/{yyyy-MM} | Hạn mức tháng |
 | GET /reports/summary?month=yyyy-MM | Thu/chi, số dư, cơ cấu |
 | GET /exports/transactions.csv | Xuất dữ liệu riêng |
-| POST /feedback | Phản hồi |
-| DELETE /me | Xóa tài khoản theo workflow xác nhận |
+| GET /me/export | Xuất toàn bộ hồ sơ/ghi chép JSON, kể cả archive/deleted |
+| POST /feedback | Phản hồi (chưa triển khai) |
+| DELETE /me | Xóa dữ liệu và mọi phiên; mật khẩu hiện tại + xác nhận, cần CSRF |
 
 POST giao dịch/chuyển ví yêu cầu `Idempotency-Key` (tối đa 128 ký tự); hash khác với key đã dùng trả 409, replay cùng request trả trạng thái hiện tại của cùng tài nguyên (200, kể cả đã sửa/xóa), không tạo lại. Tạo mới trả 201, dữ liệu không hợp lệ 400, chưa đăng nhập 401, tài nguyên không thuộc owner 404; ví/danh mục archive trả 409. Identity dùng mã phản hồi mô tả trong tài liệu riêng.
 

@@ -36,7 +36,8 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/register", "/api/v1/auth/login",
                     "/api/v1/auth/verify-email", "/api/v1/auth/resend-verification",
                     "/api/v1/auth/forgot-password", "/api/v1/auth/reset-password").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/me").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/v1/me", "/api/v1/me/export").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/v1/me").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/v1/wallets", "/api/v1/wallets/*",
                     "/api/v1/categories", "/api/v1/categories/*").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/v1/wallets", "/api/v1/categories", "/api/v1/categories/defaults").authenticated()

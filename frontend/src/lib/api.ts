@@ -36,3 +36,17 @@ export async function downloadCsv(from: string, to: string): Promise<void> {
 export function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : "Đã có lỗi xảy ra. Vui lòng thử lại.";
 }
+
+export async function downloadPersonalData(): Promise<void> {
+  const response = await request("/me/export");
+  const blob = await response.blob();
+  // Do not offer a truncated or partial JSON document as a successful export.
+  try {
+    const data = JSON.parse(await blob.text());
+    if (data.schemaVersion !== 1 || !data.account?.id || !["wallets", "categories", "transactions", "transfers", "budgets", "budgetItems"].every(key => Array.isArray(data[key]))) throw new Error("Incomplete export");
+  } catch { throw new Error("Chưa tải được tệp dữ liệu đầy đủ. Vui lòng thử lại."); }
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a"); anchor.href = url; anchor.download = "finstep-personal-data.json";
+  document.body.append(anchor); anchor.click(); anchor.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30_000);
+}

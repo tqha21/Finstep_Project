@@ -30,7 +30,7 @@ Mật khẩu ít nhất 12 ký tự, tối đa 72 byte UTF-8; BCrypt cost 12. Em
 
 ## Email cục bộ
 
-Chạy `docker compose up -d mailpit`. Backend mặc định SMTP `127.0.0.1:1025`; Mailpit lưu email thử nghiệm, API/UI ở cổng 8025 chỉ bind loopback. Email chứa mã để gọi API xác minh/reset; chưa có màn hình nhập mã hoặc đường dẫn frontend. Không gửi email tới dịch vụ bên ngoài trong smoke test.
+Chạy `docker compose up -d mailpit`. Backend mặc định SMTP `127.0.0.1:1025`; Mailpit lưu email thử nghiệm, API/UI ở cổng 8025 chỉ bind loopback. Email chứa mã để gọi API xác minh/reset; frontend đã có màn hình dán mã xác minh/reset; chưa có deep link chứa token. Không gửi email tới dịch vụ bên ngoài trong smoke test.
 
 SMTP thật được cấu hình qua `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_AUTH=true`, `SMTP_STARTTLS=true`, `MAIL_FROM`. Credentials chỉ nhập qua môi trường/secret manager, không commit. Đây là cấu hình chưa được kiểm chứng trên nhà cung cấp bên ngoài.
 
@@ -48,6 +48,6 @@ Dùng PostgreSQL để chia sẻ giới hạn giữa các instance, không reset
 
 `./mvnw verify` chạy PostgreSQL thật qua Testcontainers. Test email dùng adapter ghi token trong bộ nhớ test; smoke test riêng đã chạy với SMTP Mailpit thật. Kiểm tra CSRF, xác minh bắt buộc, token hết hạn/một lần, duplicate email, Unicode/password byte limits, rate limit, cookie rotation, HttpOnly, logout/replay cookie, reset nhiều phiên, disabled account, hồ sơ của hai người dùng, rollback khi mail lỗi.
 
-Chưa sẵn sàng mở public beta: còn thiếu UI quản lý ví/danh mục/chuyển ví và hồ sơ, đổi mật khẩu trong hồ sơ, export đầy đủ/xóa tài khoản, audit, backup/restore, kiểm thử đồng thời reset/login và cấu hình hosting thực. Cần xác minh session/CSRF/Secure cookie qua HTTPS trên staging và chính sách retention token.
+Chưa sẵn sàng mở public beta: còn thiếu đổi mật khẩu trong hồ sơ, kênh phản hồi, audit, backup/restore, kiểm thử đồng thời reset/login và cấu hình hosting thực. UI quản lý và export/xóa tài khoản đã có; xem privacy.md. Cần xác minh session/CSRF/Secure cookie qua HTTPS trên staging và chính sách retention token.
 
 SMTP hiện gửi đồng bộ trong transaction; timeout bị giới hạn. Nếu SMTP chấp nhận email nhưng commit DB thất bại, mã trong email không dùng được và người dùng cần resend. Trước khi vận hành lớn cần thiết kế giao hàng đáng tin cậy; không lưu raw reset token tùy tiện trong outbox/log. Phản hồi SMTP lỗi và thời gian phản hồi vẫn có thể cho tín hiệu về tài khoản; không tuyên bố chống enumeration tuyệt đối.

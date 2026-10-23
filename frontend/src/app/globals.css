@@ -281,3 +281,11 @@ input:disabled { background:#f0f3ef; }
 .ledger-row strong { font-size:17px;white-space:nowrap; }.ledger-list .actions { margin-top:12px; }
 .ledger-toolbar { margin-top:25px;display:flex;gap:10px;flex-wrap:wrap; }
 @media(max-width:760px) { .dashboard-header>.actions { width:100%; }.dashboard-header>.actions>.button { flex:1; }.filters { grid-template-columns:1fr 1fr; }.management-grid { grid-template-columns:1fr; }.ledger-row { gap:10px; }.ledger-row strong { font-size:14px; }.ledger-toolbar>.button { flex:1; } }
+
+.privacy-panel>p { color:var(--muted);font-size:13px;margin:0 0 18px; }
+.privacy-panel>.button { margin:5px 0 12px; }.privacy-link { display:block;color:var(--green);font-size:12px; }
+.danger-zone { border-top:1px solid var(--line);padding-top:24px;margin-top:25px; }.danger-zone p { color:var(--muted);font-size:13px;margin:10px 0 17px; }
+.button-danger { color:#983c30;background:#fff2ee;border-color:#edc9bd; }.button-danger:hover:not(:disabled) { color:#7c2e24;background:#fbe5de; }
+.public-document { max-width:800px;margin:auto;padding:40px 24px 60px; }.public-document>.brand { margin-bottom:48px; }
+.public-document h1 { margin:14px 0 24px; }.public-document h2 { margin:30px 0 12px; }.public-document p { margin-bottom:14px;color:#53685d;line-height:1.9; }.public-document .actions { margin-top:32px; }
+.account-result { max-width:540px;margin:7vh auto;padding:25px; }.account-result>.brand { margin-bottom:50px; }.account-result h1 { margin:15px 0 23px; }.account-result p { color:var(--muted);margin:0 0 20px; }.account-result .button { margin-top:10px; }

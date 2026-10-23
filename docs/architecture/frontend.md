@@ -1,4 +1,4 @@
-# Frontend v0.2 — Next.js, TypeScript và Tailwind
+# Frontend v0.3 — Next.js, TypeScript và Tailwind
 
 ## Đã triển khai
 
@@ -14,6 +14,7 @@
 - `/app/profile`: đổi tên và múi giờ IANA; cập nhật context dùng chung ngay sau PATCH, không cần đăng nhập lại. Thay múi giờ chỉ thay cách chia ngày/tháng báo cáo, không đổi instant lịch sử.
 - Ngân sách theo tháng với hạn mức danh mục, cập nhật qua PUT. Danh mục archive có hạn mức cũ sẽ chặn chỉnh sửa để tránh xóa ngầm; cần khôi phục qua trang Danh mục trước khi sửa ngân sách.
 - CSV dùng chính from/to backend trả cho tháng, tải có cookie xác thực; hiển thị lỗi nếu quá 10.000 dòng.
+- Hồ sơ có xuất toàn bộ JSON và xóa tài khoản bằng mật khẩu/xác nhận. Tệp JSON được kiểm tra đầy đủ trước download; 204 kết thúc phiên, mất phản hồi sau xóa có trang riêng mô tả chưa rõ kết quả. `/privacy` công khai mô tả dữ liệu, retention hiện có và giới hạn môi trường phát triển. Xem [thiết kế privacy](privacy.md).
 - Responsive, modal dùng dialog focus trap/Escape và trả focus, trường nhập có nhãn/hint, trạng thái tải/rỗng/lỗi, giữ form khi API lỗi. Chưa tuyên bố đạt chuẩn accessibility đầy đủ.
 
 Sidebar và thanh điều hướng mobile dẫn tới các trang độc lập, đánh dấu trang hiện tại; hồ sơ có nút riêng trên header mobile. Ngân sách vẫn chỉnh tại dashboard. Giao dịch gần đây trên dashboard gồm INCOME/EXPENSE; chuyển ví xem tại Lịch sử giao dịch.
@@ -56,14 +57,14 @@ Có thể truyền bộ lọc Playwright sau script, ví dụ `bash scripts/test
 
 Script tạo PostgreSQL/Mailpit tạm với cổng ngẫu nhiên, chạy JAR trên cổng riêng và truyền API_ORIGIN cho Next dev server cổng 3100. Playwright Chromium chạy UI thực; không mock thay backend. Sau test chỉ dừng process/container do script tạo và xóa dữ liệu volume test; không đụng database phát triển.
 
-Kết quả mới nhất: **6/6 E2E đạt**, không bỏ qua; TypeScript, ESLint và production build đạt. Smoke test riêng bằng `next start` cũng đã đăng nhập qua proxy/cookie, kiểm tra số dư của hai ví và lịch sử từ API thật, chụp trang ví/lịch sử desktop và chuyển ví mobile, không có page error. Đây là kiểm chứng local, chưa deploy Internet.
+Kết quả mới nhất: **8/8 E2E đạt**, không bỏ qua; TypeScript, ESLint và production build đạt. Smoke test riêng bằng `next start` cũng đã đăng nhập qua proxy/cookie, kiểm tra số dư/lịch sử, tải JSON và xóa tài khoản thử nghiệm với API thật; chụp desktop/mobile, không có page error. Đây là kiểm chứng local, chưa deploy Internet.
 
-Sáu kịch bản: (1) đăng ký/email/verify/login/ví, giả lập mất phản hồi **sau khi backend commit**, retry cùng key tạo đúng một giao dịch, ngân sách, download CSV, logout; (2) viewport 390px, empty state, focus/Escape, thu nhập thật và đổi tháng không giữ dữ liệu cũ; (3) forgot/reset qua email, mật khẩu cũ bị từ chối và form login giữ email; (4) thiết bị America/New_York, ngày không tồn tại khi đổi DST, ngày trước số dư ban đầu/tương lai, sửa giữ instant và đổi múi giờ đưa khoản tiền sang đúng tháng; (5) tạo/đổi tên/lưu trữ/khôi phục ví và danh mục, mất phản hồi sau commit tạo ví (khóa tạo lặp), chuyển ví retry cùng key, sửa/xóa thu chi/chuyển ví tính lại số dư, giữ lịch sử archive và hồ sơ; (6) 23 khoản cùng timestamp, trang 20/3 không trùng, lọc loại/danh mục/ví/tháng/toàn thời gian và điều hướng mobile.
+Tám kịch bản: (1) đăng ký/email/verify/login/ví, giả lập mất phản hồi **sau khi backend commit**, retry cùng key tạo đúng một giao dịch, ngân sách, download CSV, logout; (2) viewport 390px, empty state, focus/Escape, thu nhập thật và đổi tháng không giữ dữ liệu cũ; (3) forgot/reset qua email, mật khẩu cũ bị từ chối và form login giữ email; (4) thiết bị America/New_York, ngày không tồn tại khi đổi DST, ngày trước số dư ban đầu/tương lai, sửa giữ instant và đổi múi giờ đưa khoản tiền sang đúng tháng; (5) tạo/đổi tên/lưu trữ/khôi phục ví và danh mục, mất phản hồi sau commit tạo ví (khóa tạo lặp), chuyển ví retry cùng key, sửa/xóa thu chi/chuyển ví tính lại số dư, giữ lịch sử archive và hồ sơ; (6) 23 khoản cùng timestamp, trang 20/3 không trùng, lọc loại/danh mục/ví/tháng/toàn thời gian và điều hướng mobile; (7) privacy, tệp JSON đầy đủ, tệp bị cắt không download, hủy/sai mật khẩu, xóa tài khoản và phiên thứ hai/mã reset cũ, đăng nhập lại bị từ chối; (8) mất phản hồi sau commit DELETE đưa về trạng thái chưa xác nhận, không tự gửi lặp.
 
-E2E chạy Next dev theo hướng dẫn webServer Playwright; build production được kiểm tra riêng. Chưa coi đây là bằng chứng HTTPS production, Safari/WebKit hoặc Firefox. Backend 32 integration tests của milestone trước vẫn là kiểm chứng riêng, không thay bằng test frontend.
+E2E chạy Next dev theo hướng dẫn webServer Playwright; build production được kiểm tra riêng. Chưa coi đây là bằng chứng HTTPS production, Safari/WebKit hoặc Firefox. Backend có 39 integration tests (gồm 7 privacy tests), kiểm chứng riêng với PostgreSQL thật, không thay bằng test frontend.
 
 Kết quả/trace ở frontend/playwright-report và frontend/test-results (ignored); ảnh dashboard-desktop.png/dashboard-mobile.png, wallets-desktop.png và history-mobile.png dùng dữ liệu fixture. CI khai báo lint/build/typecheck và E2E full-stack, chưa khẳng định kết quả CI trên GitHub.
 
 ## Còn lại trước beta
 
-Privacy, export đầy đủ/delete, feedback; HTTPS/SMTP staging, backup/restore, monitoring, đo tải. Không đưa dữ liệu tài chính thật vào bản phát triển này.
+Đổi mật khẩu trong hồ sơ, feedback, chính sách vận hành beta; HTTPS/SMTP staging, backup/restore, monitoring, đo tải. Không đưa dữ liệu tài chính thật vào bản phát triển này.

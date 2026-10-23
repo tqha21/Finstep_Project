@@ -52,6 +52,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
       {mode === "login" && <Link className="form-aside" href="/auth/forgot">Quên mật khẩu?</Link>}
       <button className="button button-primary full-width" disabled={!ready || pending}>{pending ? <LoaderCircle className="spin" size={18}/> : <ArrowRight size={18}/>} {pending ? "Đang xử lý…" : action}</button>
     </form>
+    {mode === "register" && <p className="auth-switch"><Link href="/privacy">Đọc thông tin quyền riêng tư trước khi đăng ký</Link></p>}
     {mode === "verify" && <details className="resend"><summary>Chưa nhận được mã?</summary><form method="post" onSubmit={resend} className="stack-form"><label>Email nhận mã<input type="email" required value={resendEmail} onChange={e => setResendEmail(e.target.value)}/></label><button className="button button-secondary" disabled={!ready || resending}>{resending ? "Đang gửi…" : "Gửi lại hướng dẫn"}</button>{resent && <p role="status">Nếu tài khoản phù hợp, email hướng dẫn sẽ được gửi.</p>}</form></details>}
     <p className="auth-switch">{mode === "login" ? <>Chưa có tài khoản? <Link href="/auth/register">Đăng ký miễn phí</Link></> : <>Đã có tài khoản? <Link href="/auth/login">Đăng nhập</Link></>}</p></>;
 }
