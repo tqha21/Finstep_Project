@@ -64,4 +64,4 @@ Mỗi ô quote theo CSV, quote trong nội dung được nhân đôi; giữ xu�
 
 Smoke test bản JAR với PostgreSQL và SMTP Mailpit đã đạt: đăng nhập, ledger, tổng tháng, ngân sách 80%, đổi múi giờ và CSV được xác thực. Chưa triển khai production hoặc xác nhận kết quả GitHub Actions.
 
-Không cần migration mới: dùng schema budgets/budget_items/users.timezone đã có. Chưa có frontend, export đầy đủ/delete tài khoản, feedback, monitoring production hoặc backup/restore drill. Cần staging HTTPS/SMTP và load test trước beta.
+Không cần migration mới: dùng schema budgets/budget_items/users.timezone đã có. Frontend xác thực/onboarding/dashboard/thu chi/ngân sách/CSV đã có; còn thiếu UI quản lý nhiều ví/danh mục/chuyển ví, export đầy đủ/delete tài khoản, feedback, monitoring production hoặc backup/restore drill. Cần staging HTTPS/SMTP và load test trước beta.

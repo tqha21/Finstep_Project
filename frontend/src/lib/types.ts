@@ -1,0 +1,11 @@
+export type User = { id: string; email: string; fullName: string; timezone: string };
+export type Wallet = { id: string; name: string; type: "CASH" | "BANK" | "EWALLET"; currency: "VND"; archived: boolean; balance: string };
+export type Category = { id: string; name: string; type: "INCOME" | "EXPENSE"; archived: boolean };
+export type Transaction = { id: string; walletId: string; categoryId: string; type: "INCOME" | "EXPENSE"; amount: string; occurredAt: string; note: string | null; deleted: boolean };
+export type History = { items: Transaction[]; nextCursor: string | null };
+export type Period = { month: string; timezone: string; from: string; to: string };
+export type Summary = { period: Period; totalIncome: string; totalExpense: string; netCashFlow: string; currentTotalBalance: string;
+  categories: { categoryId: string; name: string; type: "INCOME" | "EXPENSE"; amount: string }[];
+  daily: { date: string; income: string; expense: string; netCashFlow: string }[] };
+export type Budget = { id: string; items: { categoryId: string; name: string; limitAmount: string; spent: string; remaining: string; percentageUsed: string; status: string }[];
+  totalLimit: string; budgetedSpent: string; remaining: string; unbudgetedSpent: string };
