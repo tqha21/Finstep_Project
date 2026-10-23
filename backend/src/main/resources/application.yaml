@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: finstep-api
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://127.0.0.1:5432/finstep}
+    username: ${DB_USERNAME:finstep}
+    password: ${DB_PASSWORD}
+  flyway:
+    # Never silently baseline a nonempty unmanaged schema.
+    baseline-on-migrate: false
+    clean-disabled: true
+server:
+  address: ${SERVER_ADDRESS:127.0.0.1}
+  port: ${PORT:8080}
+  error:
+    include-message: never
+    include-stacktrace: never
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: readinessState,db

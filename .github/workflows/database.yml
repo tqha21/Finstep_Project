@@ -1,0 +1,11 @@
+name: Database integrity
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  postgres:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate migration and financial invariants
+        run: bash scripts/test-database.sh
