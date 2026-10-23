@@ -11,6 +11,7 @@ export function useResource<T>(key: string, load: () => Promise<T>) {
     return () => { cancelled = true; };
   }, [requestKey, load]);
   const reload = useCallback(() => setVersion(value => value + 1), []);
+  const replace = useCallback((data: T) => setState({ key: requestKey, data }), [requestKey]);
   return { data: state.key === requestKey ? state.data : undefined, error: state.key === requestKey ? state.error : undefined,
-    loading: state.key !== requestKey, reload };
+    loading: state.key !== requestKey, reload, replace };
 }

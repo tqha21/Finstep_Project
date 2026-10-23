@@ -48,4 +48,4 @@ for attempt in {1..60}; do
   sleep 1
 done
 if [[ "$ready" != true ]]; then echo 'Isolated backend failed readiness; see frontend/test-results/backend.log.' >&2; exit 1; fi
-npm --prefix frontend run test:e2e
+npm --prefix frontend run test:e2e -- "$@"

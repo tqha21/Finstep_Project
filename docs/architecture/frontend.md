@@ -1,4 +1,4 @@
-# Frontend v0.1 — Next.js, TypeScript và Tailwind
+# Frontend v0.2 — Next.js, TypeScript và Tailwind
 
 ## Đã triển khai
 
@@ -6,12 +6,17 @@
 - `/auth/register`, `/auth/verify`, `/auth/login`, `/auth/forgot`, `/auth/reset`: email/token/password thực sự gọi Spring API. Có gửi lại xác minh; mã lấy từ email rồi dán vào form, chưa có deep link.
 - `/app`: xác thực bằng GET /me, dashboard tổng số dư hiện tại và báo cáo tháng theo múi giờ tài khoản, biểu đồ ngày, cơ cấu chi, lịch sử cursor, các ví và trạng thái ngân sách.
 - `/app/onboarding`: ví đầu tiên, loại ví và số dư tại thời điểm tạo. Chuẩn bị danh mục riêng qua backend. Nếu mất phản hồi, lần thử lại kiểm tra ví đã có trước khi tạo thêm; POST ví chưa có bảo đảm idempotency như ledger.
-- Thu/chi nhanh: chọn ví/danh mục, số tiền, ghi chú; thời điểm hiện tại khi bắt đầu lưu. Giữ payload/time/key qua retry chưa đổi nội dung. Không giữ key qua đóng hộp thoại hoặc reload; khi chưa rõ kết quả, nên thử lại trong form hiện tại.
-- Ngân sách theo tháng với hạn mức danh mục, cập nhật qua PUT. Danh mục archive có hạn mức cũ sẽ chặn chỉnh sửa để tránh xóa ngầm; cần khôi phục danh mục (UI quản lý danh mục sẽ bổ sung).
+- Thu/chi nhanh và sửa giao dịch: chọn ví/danh mục, số tiền, ghi chú, thời điểm. Chọn ngày theo **múi giờ thiết bị** hiển thị bên cạnh input; chuyển thành UTC trước khi gửi. Ngày/giờ không tồn tại khi đổi DST bị từ chối, ngày tương lai/trước số dư ban đầu bị backend từ chối. Khi sửa mà không đổi thời điểm, giữ nguyên instant gốc (kể cả phần mili giây và giờ DST trùng). Giờ DST lặp nhập mới dùng lần xuất hiện đầu theo Date của trình duyệt.
+- Tạo thu/chi/chuyển ví giữ payload/time/key qua retry chưa đổi nội dung. Không giữ key qua đóng hộp thoại hoặc reload; khi chưa rõ kết quả, nên thử lại trong form hiện tại. Replay của khoản đã bị xóa ở phiên khác được báo lỗi, không thông báo lưu thành công.
+- `/app/wallets`: tạo nhiều ví, đổi tên, lưu trữ/khôi phục và chuyển ví; số dư ban đầu ghi tại lúc tạo, không sửa lại. `/app/categories`: tạo danh mục thu/chi, đổi tên, lưu trữ/khôi phục. Xác nhận trước khi lưu trữ, lịch sử và số dư vẫn được giữ.
+- POST ví/danh mục chưa có idempotency: nếu mất kết nối/5xx, khóa nút tạo tiếp trong form; đóng form sẽ tải lại danh sách để kiểm tra kết quả trước khi tạo lại. PATCH đổi tên/lưu trữ có thể thử lại.
+- `/app/activity`: thu/chi và chuyển ví tách danh sách; lọc theo tháng tài khoản hoặc toàn thời gian, ví (kể cả archive), loại/danh mục cho thu/chi. Cursor 20 mục/trang, trước/sau; đổi bộ lọc hoặc lưu/xóa quay về trang đầu. Có sửa toàn bộ và xác nhận xóa; backend tính lại số dư/báo cáo/ngân sách. Cursor không bảo đảm snapshot nếu dữ liệu thay đổi giữa các trang.
+- `/app/profile`: đổi tên và múi giờ IANA; cập nhật context dùng chung ngay sau PATCH, không cần đăng nhập lại. Thay múi giờ chỉ thay cách chia ngày/tháng báo cáo, không đổi instant lịch sử.
+- Ngân sách theo tháng với hạn mức danh mục, cập nhật qua PUT. Danh mục archive có hạn mức cũ sẽ chặn chỉnh sửa để tránh xóa ngầm; cần khôi phục qua trang Danh mục trước khi sửa ngân sách.
 - CSV dùng chính from/to backend trả cho tháng, tải có cookie xác thực; hiển thị lỗi nếu quá 10.000 dòng.
 - Responsive, modal dùng dialog focus trap/Escape và trả focus, trường nhập có nhãn/hint, trạng thái tải/rỗng/lỗi, giữ form khi API lỗi. Chưa tuyên bố đạt chuẩn accessibility đầy đủ.
 
-Điều hướng sidebar hiện dẫn tới các phần dashboard; chưa phải các trang quản lý lịch sử/ví độc lập. Giao dịch gần đây chỉ gồm INCOME/EXPENSE, chưa hiển thị transfers.
+Sidebar và thanh điều hướng mobile dẫn tới các trang độc lập, đánh dấu trang hiện tại; hồ sơ có nút riêng trên header mobile. Ngân sách vẫn chỉnh tại dashboard. Giao dịch gần đây trên dashboard gồm INCOME/EXPENSE; chuyển ví xem tại Lịch sử giao dịch.
 
 ## Session và dữ liệu
 
@@ -47,16 +52,18 @@ Cần Docker, Node, JDK/JRE 21, backend JAR đã build và frontend dependencies
 bash scripts/test-web.sh
 ```
 
+Có thể truyền bộ lọc Playwright sau script, ví dụ `bash scripts/test-web.sh tests/dates.spec.ts`.
+
 Script tạo PostgreSQL/Mailpit tạm với cổng ngẫu nhiên, chạy JAR trên cổng riêng và truyền API_ORIGIN cho Next dev server cổng 3100. Playwright Chromium chạy UI thực; không mock thay backend. Sau test chỉ dừng process/container do script tạo và xóa dữ liệu volume test; không đụng database phát triển.
 
-Kết quả mới nhất: **3/3 E2E đạt**, không bỏ qua; TypeScript, ESLint và production build đạt. Smoke test riêng bằng `next start` cũng đã đăng nhập qua proxy/cookie, đọc dashboard từ API thật và chụp desktop/mobile, không có page error. Đây là kiểm chứng local, chưa deploy Internet.
+Kết quả mới nhất: **6/6 E2E đạt**, không bỏ qua; TypeScript, ESLint và production build đạt. Smoke test riêng bằng `next start` cũng đã đăng nhập qua proxy/cookie, kiểm tra số dư của hai ví và lịch sử từ API thật, chụp trang ví/lịch sử desktop và chuyển ví mobile, không có page error. Đây là kiểm chứng local, chưa deploy Internet.
 
-Ba kịch bản: (1) đăng ký/email/verify/login/ví, giả lập mất phản hồi **sau khi backend commit**, retry cùng key tạo đúng một giao dịch, ngân sách, download CSV, logout; (2) viewport 390px, empty state, focus/Escape, thu nhập thật và đổi tháng không giữ dữ liệu cũ; (3) forgot/reset qua email, mật khẩu cũ bị từ chối và form login giữ email.
+Sáu kịch bản: (1) đăng ký/email/verify/login/ví, giả lập mất phản hồi **sau khi backend commit**, retry cùng key tạo đúng một giao dịch, ngân sách, download CSV, logout; (2) viewport 390px, empty state, focus/Escape, thu nhập thật và đổi tháng không giữ dữ liệu cũ; (3) forgot/reset qua email, mật khẩu cũ bị từ chối và form login giữ email; (4) thiết bị America/New_York, ngày không tồn tại khi đổi DST, ngày trước số dư ban đầu/tương lai, sửa giữ instant và đổi múi giờ đưa khoản tiền sang đúng tháng; (5) tạo/đổi tên/lưu trữ/khôi phục ví và danh mục, mất phản hồi sau commit tạo ví (khóa tạo lặp), chuyển ví retry cùng key, sửa/xóa thu chi/chuyển ví tính lại số dư, giữ lịch sử archive và hồ sơ; (6) 23 khoản cùng timestamp, trang 20/3 không trùng, lọc loại/danh mục/ví/tháng/toàn thời gian và điều hướng mobile.
 
 E2E chạy Next dev theo hướng dẫn webServer Playwright; build production được kiểm tra riêng. Chưa coi đây là bằng chứng HTTPS production, Safari/WebKit hoặc Firefox. Backend 32 integration tests của milestone trước vẫn là kiểm chứng riêng, không thay bằng test frontend.
 
-Kết quả/trace ở frontend/playwright-report và frontend/test-results (ignored); ảnh dashboard-desktop.png/dashboard-mobile.png dùng dữ liệu fixture. CI khai báo lint/build/typecheck và E2E full-stack, chưa khẳng định kết quả CI trên GitHub.
+Kết quả/trace ở frontend/playwright-report và frontend/test-results (ignored); ảnh dashboard-desktop.png/dashboard-mobile.png, wallets-desktop.png và history-mobile.png dùng dữ liệu fixture. CI khai báo lint/build/typecheck và E2E full-stack, chưa khẳng định kết quả CI trên GitHub.
 
 ## Còn lại trước beta
 
-UI quản lý nhiều ví/danh mục, nhập ngày giao dịch tùy chọn, chuyển ví, sửa/xóa giao dịch, filters/history đầy đủ, hồ sơ/múi giờ; privacy, export đầy đủ/delete, feedback; HTTPS/SMTP staging, backup/restore, monitoring, đo tải. Không đưa dữ liệu tài chính thật vào bản phát triển này.
+Privacy, export đầy đủ/delete, feedback; HTTPS/SMTP staging, backup/restore, monitoring, đo tải. Không đưa dữ liệu tài chính thật vào bản phát triển này.

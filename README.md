@@ -5,7 +5,7 @@ Mục tiêu: public beta sau 16 tuần, một người phát triển; ưu tiên 
 
 ## Trạng thái
 
-Đã triển khai nền tảng PostgreSQL và khung Spring Boot Java 21: Flyway, health/readiness, cấu hình bảo mật mặc định chặn API, kiểm thử tích hợp PostgreSQL và CI. Đã có API đăng ký, xác minh email, đăng nhập/đăng xuất, khôi phục mật khẩu và hồ sơ riêng. Đã có API ví, số dư ban đầu và danh mục riêng/mặc định. Đã có thu/chi/chuyển ví, sửa/xóa, lịch sử phân trang và chống tạo trùng. Đã có ngân sách tháng, báo cáo theo múi giờ, xuất CSV và đổi tên/múi giờ hồ sơ. Đã có frontend Next.js cho xác thực, ví đầu tiên và dashboard; hỗ trợ thu/chi nhanh, ngân sách và CSV. Chưa triển khai production. Không đưa dữ liệu người dùng thật vào phiên bản này.
+Đã triển khai nền tảng PostgreSQL và khung Spring Boot Java 21: Flyway, health/readiness, cấu hình bảo mật mặc định chặn API, kiểm thử tích hợp PostgreSQL và CI. Đã có API đăng ký, xác minh email, đăng nhập/đăng xuất, khôi phục mật khẩu và hồ sơ riêng. Đã có API ví, số dư ban đầu và danh mục riêng/mặc định. Đã có thu/chi/chuyển ví, sửa/xóa, lịch sử phân trang và chống tạo trùng. Đã có ngân sách tháng, báo cáo theo múi giờ, xuất CSV và đổi tên/múi giờ hồ sơ. Đã có frontend Next.js cho xác thực, ví đầu tiên và dashboard; hỗ trợ thu/chi, chuyển ví, sửa/xóa, quản lý nhiều ví/danh mục, lịch sử có bộ lọc, hồ sơ/múi giờ, ngân sách và CSV. Chưa triển khai production. Không đưa dữ liệu người dùng thật vào phiên bản này.
 
 ## Chạy kiểm thử
 
@@ -75,7 +75,7 @@ Nếu home chỉ đọc trong cloud, đặt `npm_config_cache=/workspace/.cache/
 - Bộ SQL integrity test đạt trên PostgreSQL 17.
 - `./mvnw verify`: 32 integration tests, kiểm tra migration/readiness, đăng ký/xác minh, phiên cookie, CSRF, reset/revoke session, quyền hồ sơ, rate limit, token hết hạn và lỗi gửi mail; tạo/sửa/lưu trữ ví/danh mục, độ chính xác số tiền, chống IDOR và khởi tạo danh mục đồng thời; thu/chi/chuyển ví, số dư sau sửa/xóa, rollback, idempotency, gửi đồng thời và cursor cùng thời điểm; ngân sách, ranh giới tháng/DST, CSV an toàn và giới hạn 10.000 dòng.
 - Smoke test thực tế qua SMTP Mailpit đã xác minh đăng ký → email → xác minh → đăng nhập → hồ sơ → đăng xuất. Email chỉ gửi vào hộp thư thử nghiệm cục bộ. Bản chạy hiện tại cũng đã smoke test tạo ví/số dư, danh mục mặc định không trùng và lưu trữ ví. Smoke test ledger cũng đã xác minh thu/chi/chuyển ví, replay, cursor, sửa/xóa và đối chiếu số dư. Bản JAR cũng đã smoke test báo cáo tháng, cảnh báo ngân sách 80%, đổi múi giờ và tải CSV có xác thực.
-- Frontend: TypeScript, ESLint, build production và **3/3 browser E2E đạt**; bao phủ tài khoản, onboarding, dashboard, thu/chi, ngân sách, CSV, retry và mobile. Xem kết quả thực thi trong tài liệu frontend.
+- Frontend: TypeScript, ESLint, build production và **6/6 browser E2E đạt**; bao phủ tài khoản, dashboard, ví/danh mục, thu/chi/chuyển ví, sửa/xóa, ngân sách, CSV, retry, phân trang, DST/múi giờ và mobile. Xem kết quả thực thi trong tài liệu frontend.
 - CI đã khai báo trên GitHub Actions; kết quả CI trên GitHub cần xem riêng sau khi push.
 
 Dừng backend trước khi đóng gói lại JAR đang chạy; khởi động lại bằng JAR mới sau khi build thành công.

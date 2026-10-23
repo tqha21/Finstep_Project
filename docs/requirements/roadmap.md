@@ -34,13 +34,12 @@ Kế hoạch tính theo tuần tương đối, 20–25 giờ/tuần. Lịch 19/1
 - [x] Ngân sách và báo cáo theo tháng/múi giờ; CSV xác thực, chống công thức và giới hạn dữ liệu.
 - [x] Đổi tên/múi giờ hồ sơ; report và budget dùng múi giờ đã lưu.
 - [x] Frontend xác thực, onboarding, dashboard responsive; thu/chi nhanh, ngân sách, CSV và browser E2E.
-- [ ] UI quản lý nhiều ví/danh mục, sửa/xóa/chuyển ví, bộ lọc lịch sử và hồ sơ.
+- [x] UI quản lý nhiều ví/danh mục, sửa/xóa/chuyển ví, bộ lọc lịch sử và hồ sơ; ngày tùy chọn theo giờ thiết bị, kiểm tra DST và báo cáo theo múi giờ tài khoản.
 - [ ] Các release gates còn lại (privacy/delete/feedback, staging, backup/restore, monitoring).
 
 ## Sprint kỹ thuật tiếp theo
 
-1. Bổ sung UI ví/danh mục, sửa/xóa/chuyển ví, lịch sử có filter và hồ sơ/múi giờ.
-2. Hoàn thiện account/privacy/export đầy đủ/delete/feedback và các kiểm thử E2E tương ứng.
-3. Staging SMTP/HTTPS, backup/restore, monitoring, load test và release gates trước private beta.
+1. Hoàn thiện account/privacy/export đầy đủ/delete/feedback và các kiểm thử E2E tương ứng.
+2. Staging SMTP/HTTPS, backup/restore, monitoring, load test và release gates trước private beta.
 
 Không triển khai ngân hàng/AI/PWA trước khi luồng nhập liệu, bảo mật và dữ liệu chính xác. Mỗi milestone chỉ hoàn thành sau khi có kiểm thử phù hợp.
