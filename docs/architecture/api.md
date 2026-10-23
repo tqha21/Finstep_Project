@@ -1,6 +1,6 @@
 # API dự kiến — `/api/v1`
 
-Đã triển khai nhóm identity: register, login, logout, verify-email, resend-verification, forgot-password, reset-password, csrf và GET /me. Xem [hợp đồng identity](identity.md). Các endpoint tài chính và hồ sơ PATCH bên dưới vẫn là thiết kế.
+Đã triển khai nhóm identity: register, login, logout, verify-email, resend-verification, forgot-password, reset-password, csrf và GET /me. Xem [hợp đồng identity](identity.md). Đã triển khai GET/POST/PATCH ví và danh mục, GET chi tiết và POST /categories/defaults; xem [hợp đồng ví/danh mục](wallets-categories.md). Giao dịch, ngân sách, báo cáo và hồ sơ PATCH bên dưới vẫn là thiết kế.
 
 Session cookie HttpOnly/Secure/SameSite và CSRF token cho mutation. Owner lấy từ session. JSON số tiền là chuỗi nguyên dương VND; thời gian ISO-8601 có offset. Lỗi dùng Problem Details, không lộ stack trace hay dữ liệu tài chính.
 

@@ -5,7 +5,7 @@ Mục tiêu: public beta sau 16 tuần, một người phát triển; ưu tiên 
 
 ## Trạng thái
 
-Đã triển khai nền tảng PostgreSQL và khung Spring Boot Java 21: Flyway, health/readiness, cấu hình bảo mật mặc định chặn API, kiểm thử tích hợp PostgreSQL và CI. Đã có API đăng ký, xác minh email, đăng nhập/đăng xuất, khôi phục mật khẩu và hồ sơ riêng. Chưa triển khai API tài chính, frontend hoặc production. Không đưa dữ liệu người dùng thật vào phiên bản này.
+Đã triển khai nền tảng PostgreSQL và khung Spring Boot Java 21: Flyway, health/readiness, cấu hình bảo mật mặc định chặn API, kiểm thử tích hợp PostgreSQL và CI. Đã có API đăng ký, xác minh email, đăng nhập/đăng xuất, khôi phục mật khẩu và hồ sơ riêng. Đã có API ví, số dư ban đầu và danh mục riêng/mặc định. Chưa triển khai API giao dịch, ngân sách, báo cáo, frontend hoặc production. Không đưa dữ liệu người dùng thật vào phiên bản này.
 
 ## Chạy kiểm thử
 
@@ -45,15 +45,15 @@ export SESSION_COOKIE_SECURE=false # chỉ khi phát triển qua HTTP loopback
 Mặc định backend kết nối `jdbc:postgresql://127.0.0.1:5432/finstep`, user `finstep`.
 Có thể đổi bằng `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `PORT`, `SERVER_ADDRESS`. Java không tự đọc file `.env` của Docker Compose. Không có mật khẩu database mặc định trong cấu hình ứng dụng.
 
-Health: `curl --fail http://127.0.0.1:8080/actuator/health/readiness` trả `{"status":"UP"}` khi database hoạt động. Không hiển thị chi tiết kết nối. API identity xem trong [hướng dẫn xác thực](docs/architecture/identity.md); API tài chính chưa triển khai. Cookie mặc định Secure; chỉ tắt Secure cho HTTP cục bộ.
+Health: `curl --fail http://127.0.0.1:8080/actuator/health/readiness` trả `{"status":"UP"}` khi database hoạt động. Không hiển thị chi tiết kết nối. API identity xem trong [hướng dẫn xác thực](docs/architecture/identity.md); API ví/danh mục xem trong [hướng dẫn ví và danh mục](docs/architecture/wallets-categories.md). Cookie mặc định Secure; chỉ tắt Secure cho HTTP cục bộ.
 
 Trong cloud workspace có home chỉ đọc, dùng `MAVEN_USER_HOME=/workspace/.cache/maven` và `-Dmaven.repo.local=/workspace/.cache/m2`. Nếu mạng yêu cầu proxy, cấu hình Maven settings theo proxy môi trường; không lưu credentials vào repository.
 
 ## Kiểm chứng hiện tại
 
 - Bộ SQL integrity test đạt trên PostgreSQL 17.
-- `./mvnw verify`: 9 integration tests, kiểm tra migration/readiness, đăng ký/xác minh, phiên cookie, CSRF, reset/revoke session, quyền hồ sơ, rate limit, token hết hạn và lỗi gửi mail.
-- Smoke test thực tế qua SMTP Mailpit đã xác minh đăng ký → email → xác minh → đăng nhập → hồ sơ → đăng xuất. Email chỉ gửi vào hộp thư thử nghiệm cục bộ.
+- `./mvnw verify`: 15 integration tests, kiểm tra migration/readiness, đăng ký/xác minh, phiên cookie, CSRF, reset/revoke session, quyền hồ sơ, rate limit, token hết hạn và lỗi gửi mail; tạo/sửa/lưu trữ ví/danh mục, độ chính xác số tiền, chống IDOR và khởi tạo danh mục đồng thời.
+- Smoke test thực tế qua SMTP Mailpit đã xác minh đăng ký → email → xác minh → đăng nhập → hồ sơ → đăng xuất. Email chỉ gửi vào hộp thư thử nghiệm cục bộ. Bản chạy hiện tại cũng đã smoke test tạo ví/số dư, danh mục mặc định không trùng và lưu trữ ví.
 - CI đã khai báo trên GitHub Actions; kết quả CI trên GitHub cần xem riêng sau khi push.
 
 Dừng backend trước khi đóng gói lại JAR đang chạy; khởi động lại bằng JAR mới sau khi build thành công.
@@ -65,5 +65,6 @@ Dừng backend trước khi đóng gói lại JAR đang chạy; khởi động l
 - [Backlog và kế hoạch 16 tuần](docs/requirements/roadmap.md)
 - [API và trạng thái triển khai](docs/architecture/api.md)
 - [Identity: API, bảo mật, email và giới hạn](docs/architecture/identity.md)
+- [Ví và danh mục: API và quy tắc](docs/architecture/wallets-categories.md)
 
 Tên sản phẩm đang dùng SmartExpense theo bản kế hoạch; repository giữ tên Finstep_Project. Chưa publish hoặc deploy production. Lịch sử triển khai được ghi trong Git.
