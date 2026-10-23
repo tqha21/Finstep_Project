@@ -27,7 +27,7 @@ Số dư ban đầu là chuỗi nguyên đồng: từ -999999999999999 đến 99
 
 Phản hồi: `id, name, type, currency, archived, openingBalance, effectiveAt, balance`. Hai trường tiền luôn là chuỗi, giữ chính xác số nguyên lớn. Balance lấy từ view tổng hợp lịch sử, không lưu current_balance riêng. Ví legacy chưa có opening_balances có openingBalance="0", effectiveAt=null.
 
-Tạo ví, số dư ban đầu và các danh mục mặc định nằm trong cùng transaction DB. POST tạo ví chưa có idempotency key: gửi lại có thể tạo ví mới; client tránh gửi lặp trong khi chờ phản hồi. Idempotency bắt buộc cho API giao dịch/chuyển ví sẽ triển khai tiếp.
+Tạo ví, số dư ban đầu và các danh mục mặc định nằm trong cùng transaction DB. POST tạo ví chưa có idempotency key: gửi lại có thể tạo ví mới; client tránh gửi lặp trong khi chờ phản hồi. Idempotency đã bắt buộc cho API giao dịch/chuyển ví.
 
 PATCH chỉ nhận `name` và/hoặc `archived`:
 
@@ -35,7 +35,7 @@ PATCH chỉ nhận `name` và/hoặc `archived`:
 {"name":"Ví sinh hoạt","archived":true}
 ```
 
-Có thể khôi phục bằng archived=false. Body rỗng trả 400. Số dư ban đầu, effectiveAt, currency và type cố định sau khi tạo; không có endpoint xóa ví. Lưu trữ không xóa hoặc làm thay đổi lịch sử/số dư. API giao dịch chưa triển khai; việc từ chối giao dịch mới vào ví archive thuộc sprint kế tiếp.
+Có thể khôi phục bằng archived=false. Body rỗng trả 400. Số dư ban đầu, effectiveAt, currency và type cố định sau khi tạo; không có endpoint xóa ví. Lưu trữ không xóa hoặc làm thay đổi lịch sử/số dư. API giao dịch đã từ chối ghi mới/cập nhật vào ví archive; có thể soft delete giao dịch cũ khi ví archive.
 
 ## Danh mục
 
@@ -57,4 +57,4 @@ Danh sách trả thứ tự created_at rồi id; hiện chưa phân trang do s�
 
 ## Kiểm chứng
 
-6 integration tests trên PostgreSQL thật bao phủ tiền nguyên lớn/số âm, validation dữ liệu, quyền đọc/sửa giữa hai người dùng, CSRF, bảo toàn lịch sử khi archive, tên/default không bị ghi đè và seeding đồng thời. Cả bộ backend có 15 tests. Migration V3 được Flyway chạy sau V1/V2; không thay đổi migration đã áp dụng.
+6 integration tests trên PostgreSQL thật bao phủ tiền nguyên lớn/số âm, validation dữ liệu, quyền đọc/sửa giữa hai người dùng, CSRF, bảo toàn lịch sử khi archive, tên/default không bị ghi đè và seeding đồng thời. Cả bộ backend có 23 tests. Migration V3 được Flyway chạy sau V1/V2; không thay đổi migration đã áp dụng.

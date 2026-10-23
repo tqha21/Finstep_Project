@@ -30,13 +30,14 @@ Kế hoạch tính theo tuần tương đối, 20–25 giờ/tuần. Lịch 19/1
 - [x] Khung Spring Boot, health/readiness và Flyway integration.
 - [x] Session auth JDBC, xác minh/reset email, CSRF, rate limit và API hồ sơ.
 - [x] Ví/danh mục: tạo, đọc, sửa tên, lưu trữ/khôi phục, số dư ban đầu, danh mục mặc định và kiểm thử chống IDOR.
-- [ ] Thu/chi/chuyển ví, lịch sử phân trang, ngân sách và báo cáo.
+- [x] Thu/chi/chuyển ví, sửa/xóa, idempotency transactional, kiểm thử đồng thời và lịch sử cursor.
+- [ ] Ngân sách và báo cáo tổng hợp theo tháng/múi giờ.
 - [ ] Frontend và toàn bộ release gates.
 
 ## Sprint kỹ thuật tiếp theo
 
-1. Thu/chi/chuyển ví: ràng buộc chủ tài khoản, loại danh mục, ví/danh mục archive, ngày không trước số dư ban đầu hoặc sau hiện tại.
-2. Idempotency transactional, sửa/xóa, lịch sử phân trang, kiểm thử concurrent retry và báo cáo tháng.
-3. Ngân sách, tích hợp frontend same-origin và cấu hình SMTP thật trên staging; kiểm thử TLS, proxy và session qua HTTPS.
+1. Ngân sách theo danh mục/tháng, tổng chi và cảnh báo hạn mức.
+2. Báo cáo thu/chi/dòng tiền theo tháng và timezone, không cộng chuyển ví; xuất CSV an toàn.
+3. Frontend same-origin và SMTP thật trên staging; kiểm thử TLS, proxy và session qua HTTPS.
 
 Không triển khai ngân hàng/AI/PWA trước khi luồng nhập liệu, bảo mật và dữ liệu chính xác. Mỗi milestone chỉ hoàn thành sau khi có kiểm thử phù hợp.

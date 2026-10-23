@@ -46,6 +46,6 @@ Dùng PostgreSQL để chia sẻ giới hạn giữa các instance, không reset
 
 `./mvnw verify` chạy PostgreSQL thật qua Testcontainers. Test email dùng adapter ghi token trong bộ nhớ test; smoke test riêng đã chạy với SMTP Mailpit thật. Kiểm tra CSRF, xác minh bắt buộc, token hết hạn/một lần, duplicate email, Unicode/password byte limits, rate limit, cookie rotation, HttpOnly, logout/replay cookie, reset nhiều phiên, disabled account, hồ sơ của hai người dùng, rollback khi mail lỗi.
 
-Chưa sẵn sàng mở public beta: chưa có UI, API giao dịch/ngân sách/báo cáo, đổi mật khẩu trong hồ sơ, export/delete, audit, backup/restore, kiểm thử đồng thời reset/login và cấu hình hosting thực. Cần xác minh session/CSRF/Secure cookie qua HTTPS trên staging và chính sách retention token.
+Chưa sẵn sàng mở public beta: chưa có UI, API ngân sách/báo cáo, đổi mật khẩu trong hồ sơ, export/delete, audit, backup/restore, kiểm thử đồng thời reset/login và cấu hình hosting thực. Cần xác minh session/CSRF/Secure cookie qua HTTPS trên staging và chính sách retention token.
 
 SMTP hiện gửi đồng bộ trong transaction; timeout bị giới hạn. Nếu SMTP chấp nhận email nhưng commit DB thất bại, mã trong email không dùng được và người dùng cần resend. Trước khi vận hành lớn cần thiết kế giao hàng đáng tin cậy; không lưu raw reset token tùy tiện trong outbox/log. Phản hồi SMTP lỗi và thời gian phản hồi vẫn có thể cho tín hiệu về tài khoản; không tuyên bố chống enumeration tuyệt đối.

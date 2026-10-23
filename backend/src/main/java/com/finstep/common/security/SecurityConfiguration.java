@@ -41,6 +41,10 @@ public class SecurityConfiguration {
                     "/api/v1/categories", "/api/v1/categories/*").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/v1/wallets", "/api/v1/categories", "/api/v1/categories/defaults").authenticated()
                 .requestMatchers(HttpMethod.PATCH, "/api/v1/wallets/*", "/api/v1/categories/*").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/v1/transactions", "/api/v1/transactions/*", "/api/v1/transfers", "/api/v1/transfers/*").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/v1/transactions", "/api/v1/transfers").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/v1/transactions/*", "/api/v1/transfers/*").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/v1/transactions/*", "/api/v1/transfers/*").authenticated()
                 .anyRequest().denyAll())
             .requestCache(AbstractHttpConfigurer::disable)
             .exceptionHandling(errors -> errors
