@@ -37,6 +37,8 @@ public class IdentityController {
     public record TokenRequest(@NotBlank @Pattern(regexp="[A-Za-z0-9_-]{43}") String token) { }
     public record Reset(@NotBlank @Pattern(regexp="[A-Za-z0-9_-]{43}") String token,
                         @NotBlank @Size(min=12,max=72) String password) { }
+    public record ProfilePatch(@Size(max=150) @Pattern(regexp="(?s).*\\S.*") String fullName,
+        @Size(max=50) @Pattern(regexp="(?s).*\\S.*") String timezone) { }
     public record CsrfResponse(String token, String headerName) { }
 
     @GetMapping("/auth/csrf")
@@ -73,4 +75,9 @@ public class IdentityController {
 
     @GetMapping("/me")
     public IdentityService.Account me(@AuthenticationPrincipal UserPrincipal principal) { return identity.account(principal.id()); }
+    @PatchMapping("/me")
+    public IdentityService.Account updateProfile(@AuthenticationPrincipal UserPrincipal owner,@Valid @RequestBody ProfilePatch body) {
+        return identity.updateProfile(owner.id(),body.fullName(),body.timezone());
+    }
+
 }

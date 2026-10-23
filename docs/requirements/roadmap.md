@@ -31,13 +31,14 @@ Kế hoạch tính theo tuần tương đối, 20–25 giờ/tuần. Lịch 19/1
 - [x] Session auth JDBC, xác minh/reset email, CSRF, rate limit và API hồ sơ.
 - [x] Ví/danh mục: tạo, đọc, sửa tên, lưu trữ/khôi phục, số dư ban đầu, danh mục mặc định và kiểm thử chống IDOR.
 - [x] Thu/chi/chuyển ví, sửa/xóa, idempotency transactional, kiểm thử đồng thời và lịch sử cursor.
-- [ ] Ngân sách và báo cáo tổng hợp theo tháng/múi giờ.
+- [x] Ngân sách và báo cáo theo tháng/múi giờ; CSV xác thực, chống công thức và giới hạn dữ liệu.
+- [x] Đổi tên/múi giờ hồ sơ; report và budget dùng múi giờ đã lưu.
 - [ ] Frontend và toàn bộ release gates.
 
 ## Sprint kỹ thuật tiếp theo
 
-1. Ngân sách theo danh mục/tháng, tổng chi và cảnh báo hạn mức.
-2. Báo cáo thu/chi/dòng tiền theo tháng và timezone, không cộng chuyển ví; xuất CSV an toàn.
-3. Frontend same-origin và SMTP thật trên staging; kiểm thử TLS, proxy và session qua HTTPS.
+1. Frontend Next.js: layout mobile/desktop, đăng nhập/xác minh/reset và onboarding.
+2. Ví/danh mục, giao dịch, ngân sách, dashboard/báo cáo, xử lý lỗi/empty/loading và xuất CSV qua frontend same-origin.
+3. Hoàn thiện account/privacy/export đầy đủ/delete/feedback, staging SMTP/HTTPS, backup/restore và release gates.
 
 Không triển khai ngân hàng/AI/PWA trước khi luồng nhập liệu, bảo mật và dữ liệu chính xác. Mỗi milestone chỉ hoàn thành sau khi có kiểm thử phù hợp.

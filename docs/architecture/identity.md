@@ -23,7 +23,7 @@ Không lưu cookie/token vào localStorage hoặc logs. API trả `Cache-Control
 | /api/v1/auth/forgot-password | email | 202 |
 | /api/v1/auth/reset-password | token, password | 204, đổi mật khẩu và hủy mọi phiên |
 
-GET `/api/v1/me`: `{id, email, fullName}`; không trả password hash/token.
+GET `/api/v1/me`: `{id, email, fullName, timezone}`; không trả password hash/token.
 Đăng ký email trùng, gửi lại xác minh và quên mật khẩu đều có phản hồi 202 rỗng để hạn chế dò tài khoản. Sai credentials, chưa xác minh hoặc bị vô hiệu đều trả cùng lỗi 401. Validation/token không hợp lệ trả 400; SMTP lỗi trả 503 và rollback thay đổi tài khoản/token của request đó.
 
 Mật khẩu ít nhất 12 ký tự, tối đa 72 byte UTF-8; BCrypt cost 12. Email trim/lowercase. Token ngẫu nhiên 32 byte, base64url 43 ký tự; DB chỉ lưu SHA-256. VERIFY hết hạn 24 giờ, RESET 30 phút. Tiêu thụ token khóa chủ tài khoản, kiểm tra lại chưa dùng và hạn dùng; token cùng mục đích còn lại bị hủy. Reset tăng auth_version để cả phiên tạo cạnh tranh với reset cũng bị từ chối ở request kế tiếp. Mỗi request có phiên kiểm tra lại trạng thái ACTIVE, xác minh và auth_version.
@@ -33,6 +33,8 @@ Mật khẩu ít nhất 12 ký tự, tối đa 72 byte UTF-8; BCrypt cost 12. Em
 Chạy `docker compose up -d mailpit`. Backend mặc định SMTP `127.0.0.1:1025`; Mailpit lưu email thử nghiệm, API/UI ở cổng 8025 chỉ bind loopback. Email chứa mã để gọi API xác minh/reset; chưa có màn hình nhập mã hoặc đường dẫn frontend. Không gửi email tới dịch vụ bên ngoài trong smoke test.
 
 SMTP thật được cấu hình qua `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_AUTH=true`, `SMTP_STARTTLS=true`, `MAIL_FROM`. Credentials chỉ nhập qua môi trường/secret manager, không commit. Đây là cấu hình chưa được kiểm chứng trên nhà cung cấp bên ngoài.
+
+PATCH `/api/v1/me` đã hỗ trợ fullName/timezone (cần CSRF), không đổi email/currency/password. Múi giờ phải hợp lệ cả Java và PostgreSQL; xem reporting.md.
 
 ## Rate limiting
 
@@ -46,6 +48,6 @@ Dùng PostgreSQL để chia sẻ giới hạn giữa các instance, không reset
 
 `./mvnw verify` chạy PostgreSQL thật qua Testcontainers. Test email dùng adapter ghi token trong bộ nhớ test; smoke test riêng đã chạy với SMTP Mailpit thật. Kiểm tra CSRF, xác minh bắt buộc, token hết hạn/một lần, duplicate email, Unicode/password byte limits, rate limit, cookie rotation, HttpOnly, logout/replay cookie, reset nhiều phiên, disabled account, hồ sơ của hai người dùng, rollback khi mail lỗi.
 
-Chưa sẵn sàng mở public beta: chưa có UI, API ngân sách/báo cáo, đổi mật khẩu trong hồ sơ, export/delete, audit, backup/restore, kiểm thử đồng thời reset/login và cấu hình hosting thực. Cần xác minh session/CSRF/Secure cookie qua HTTPS trên staging và chính sách retention token.
+Chưa sẵn sàng mở public beta: chưa có UI, đổi mật khẩu trong hồ sơ, export đầy đủ/xóa tài khoản, audit, backup/restore, kiểm thử đồng thời reset/login và cấu hình hosting thực. Cần xác minh session/CSRF/Secure cookie qua HTTPS trên staging và chính sách retention token.
 
 SMTP hiện gửi đồng bộ trong transaction; timeout bị giới hạn. Nếu SMTP chấp nhận email nhưng commit DB thất bại, mã trong email không dùng được và người dùng cần resend. Trước khi vận hành lớn cần thiết kế giao hàng đáng tin cậy; không lưu raw reset token tùy tiện trong outbox/log. Phản hồi SMTP lỗi và thời gian phản hồi vẫn có thể cho tín hiệu về tài khoản; không tuyên bố chống enumeration tuyệt đối.

@@ -24,7 +24,7 @@ public class IdentityService {
     private final SecureRandom random = new SecureRandom();
     private final String dummyHash;
 
-    public record Account(UUID id, String email, String fullName) { }
+    public record Account(UUID id, String email, String fullName, String timezone) { }
     private record LoginAccount(UUID id, String hash, boolean usable, int authVersion) { }
 
     public IdentityService(JdbcTemplate jdbc, PasswordEncoder passwords, MailGateway mail,
@@ -125,9 +125,23 @@ public class IdentityService {
     }
 
     public Account account(UUID id) {
-        var accounts = jdbc.query("SELECT id,email,full_name FROM users WHERE id=? AND status='ACTIVE' AND email_verified_at IS NOT NULL",
-            (rs,n) -> new Account(rs.getObject("id",UUID.class),rs.getString("email"),rs.getString("full_name")),id);
+        var accounts = jdbc.query("SELECT id,email,full_name,timezone FROM users WHERE id=? AND status='ACTIVE' AND email_verified_at IS NOT NULL",
+            (rs,n) -> new Account(rs.getObject("id",UUID.class),rs.getString("email"),rs.getString("full_name"),rs.getString("timezone")),id);
         if (accounts.isEmpty()) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         return accounts.getFirst();
     }
+    @Transactional
+    public Account updateProfile(UUID owner,String fullName,String timezone) {
+        if(fullName==null && timezone==null)throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Cần cung cấp tên hoặc múi giờ.");
+        if(timezone!=null) {
+            try { java.time.ZoneId.of(timezone); }
+            catch(java.time.DateTimeException invalid) { throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Múi giờ không hợp lệ."); }
+            Integer supported=jdbc.queryForObject("SELECT count(*) FROM pg_timezone_names WHERE name=?",Integer.class,timezone);
+            if(supported==null || supported==0)throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Múi giờ không được hỗ trợ.");
+        }
+        jdbc.update("UPDATE users SET full_name=coalesce(?,full_name),timezone=coalesce(?,timezone) WHERE id=?",
+            fullName==null?null:fullName.strip(),timezone,owner);
+        return account(owner);
+    }
+
 }

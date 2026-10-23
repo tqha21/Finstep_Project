@@ -61,7 +61,7 @@ GET hai collection có `from`, `to`, `walletId`, `size` (mặc định 20, từ 
 
 Khoảng thời gian `[from,to)`; nếu có cả hai thì from < to. Sort occurred_at DESC, id DESC, lấy size+1 để tính nextCursor. Trả nextCursor=null khi hết. Cursor chứa cặp thời điểm/UUID và dùng lại nguyên văn; giữ nguyên các filter khi lấy trang tiếp. Tất cả truy vấn vẫn ràng buộc owner, kể cả khi client sửa cursor. Cursor không phải token xác thực.
 
-Không lặp/mất bản ghi có cùng timestamp khi dữ liệu không đổi. Đây không phải snapshot xuyên nhiều HTTP request: sửa/xóa/thêm giữa các trang có thể làm thay đổi lịch sử. Chưa gộp hai collection thành một timeline và chưa có báo cáo tháng/CSV.
+Không lặp/mất bản ghi có cùng timestamp khi dữ liệu không đổi. Đây không phải snapshot xuyên nhiều HTTP request: sửa/xóa/thêm giữa các trang có thể làm thay đổi lịch sử. Chưa gộp hai collection thành một timeline. Báo cáo tháng và CSV đã triển khai; xem reporting.md.
 
 Lỗi: validation/header/cursor/range không hợp lệ 400; chưa đăng nhập 401; thiếu CSRF 403; tài nguyên không tồn tại/khác chủ 404; archive hoặc key xung đột 409. Lỗi không trả ghi chú/số tiền của người khác.
 
@@ -71,4 +71,4 @@ Lỗi: validation/header/cursor/range không hợp lệ 400; chưa đăng nhập
 
 Bản JAR đã smoke test qua SMTP Mailpit và HTTP: thu/chi/chuyển ví, replay, cursor, sửa/xóa và đối chiếu số dư. Database phát triển đã nâng cấp V3 → V4 thành công.
 
-Còn cần budget/report/export, đo tải, phát hiện/đối soát dữ liệu production, backup/restore, frontend và kiểm thử HTTPS trên staging.
+Budget/report/CSV đã triển khai. Còn cần export đầy đủ tài khoản, đo tải, phát hiện/đối soát dữ liệu production, backup/restore, frontend và kiểm thử HTTPS trên staging.

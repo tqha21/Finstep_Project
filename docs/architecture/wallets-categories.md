@@ -57,4 +57,4 @@ Danh sách trả thứ tự created_at rồi id; hiện chưa phân trang do s�
 
 ## Kiểm chứng
 
-6 integration tests trên PostgreSQL thật bao phủ tiền nguyên lớn/số âm, validation dữ liệu, quyền đọc/sửa giữa hai người dùng, CSRF, bảo toàn lịch sử khi archive, tên/default không bị ghi đè và seeding đồng thời. Cả bộ backend có 23 tests. Migration V3 được Flyway chạy sau V1/V2; không thay đổi migration đã áp dụng.
+6 integration tests trên PostgreSQL thật bao phủ tiền nguyên lớn/số âm, validation dữ liệu, quyền đọc/sửa giữa hai người dùng, CSRF, bảo toàn lịch sử khi archive, tên/default không bị ghi đè và seeding đồng thời. Cả bộ backend có 32 tests. Migration V3 được Flyway chạy sau V1/V2; không thay đổi migration đã áp dụng.
