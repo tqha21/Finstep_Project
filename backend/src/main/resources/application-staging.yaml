@@ -1,0 +1,19 @@
+server:
+  forward-headers-strategy: native
+  tomcat:
+    remoteip:
+      remote-ip-header: X-Forwarded-For
+      protocol-header: X-Forwarded-Proto
+      internal-proxies: ${TRUSTED_PROXY_REGEX:10\.77\.0\.10}
+management:
+  server:
+    port: 9090
+    address: 0.0.0.0
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true

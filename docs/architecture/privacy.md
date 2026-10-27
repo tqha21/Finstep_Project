@@ -37,3 +37,5 @@ Nếu mất phản hồi sau DELETE hoặc nhận 401, kiểm tra GET /me: khi p
 ## Kiểm thử
 
 PrivacyIntegrationTest dùng PostgreSQL thật: hai tenant, field whitelist, tiền nguyên lớn, ghi chú Unicode/quote/newline, archive/deleted, thiếu session/CSRF, sai mật khẩu/xác nhận/owner override, throttle, xóa toàn bộ/session/cookie cũ, rollback bằng trigger lỗi, snapshot stream khi cập nhật song song, và ledger tạo cạnh tranh với xóa. Browser E2E dùng SMTP/API/DB tách riêng: tải JSON, từ chối stream bị cắt, hủy/sai mật khẩu, xóa nhiều phiên, mã reset cũ vô hiệu, đăng nhập lại bị từ chối và mất phản hồi sau commit.
+
+Diễn tập backup/restore đã có trong [runbook staging/recovery](../operations/staging-recovery.md): backup mã hóa không chứa phiên/token; restore cách ly đối chiếu source hiện tại, bỏ tài khoản đã xóa và giữ credentials/profile/status mới. Tool không hỗ trợ mất toàn bộ source hoặc tự promote. Journal độc lập, offsite retention và freeze/cutover vẫn là gate vận hành.

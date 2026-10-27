@@ -1,0 +1,33 @@
+rule_files: [alerts.yml]
+evaluation_interval: 15s
+tests:
+  - interval: 15s
+    input_series:
+      - series: 'up{job="finstep-api",instance="api:9090"}'
+        values: '0x12'
+      - series: 'probe_success{job="finstep-readiness",instance="api-readiness"}'
+        values: '0x12'
+    alert_rule_test:
+      - eval_time: 2m
+        alertname: FinstepApiDown
+        exp_alerts:
+          - exp_labels: {job: finstep-api, instance: "api:9090", severity: critical}
+            exp_annotations: {summary: "Finstep API scrape is failing"}
+      - eval_time: 2m
+        alertname: FinstepReadinessFailed
+        exp_alerts:
+          - exp_labels: {job: finstep-readiness, instance: api-readiness, severity: critical}
+            exp_annotations: {summary: "Finstep readiness probe is failing"}
+  - interval: 15s
+    input_series:
+      - series: 'up{job="finstep-api",instance="api:9090"}'
+        values: '1x12'
+      - series: 'probe_success{job="finstep-readiness",instance="api-readiness"}'
+        values: '1x12'
+    alert_rule_test:
+      - eval_time: 2m
+        alertname: FinstepApiDown
+        exp_alerts: []
+      - eval_time: 2m
+        alertname: FinstepReadinessFailed
+        exp_alerts: []

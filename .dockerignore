@@ -1,0 +1,9 @@
+**
+!backend/
+!backend/target/
+!backend/target/finstep-api-0.1.0-SNAPSHOT.jar
+!frontend/
+!frontend/.next/
+!frontend/.next/standalone/**
+!frontend/.next/static/**
+!frontend/public/**

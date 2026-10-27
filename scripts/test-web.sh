@@ -23,7 +23,7 @@ cleanup() {
 }
 trap cleanup EXIT
 # Each run owns its isolated database/mailbox. No development/production data is used.
-docker run -d --name "$db" -e POSTGRES_PASSWORD=ephemeral-test-only -p 127.0.0.1::5432 postgres:17 >/dev/null
+docker run -d --name "$db" --label com.finstep.e2e=true -e POSTGRES_PASSWORD=ephemeral-test-only -p 127.0.0.1::5432 postgres:17 >/dev/null
 docker run -d --name "$mail" -p 127.0.0.1::1025 -p 127.0.0.1::8025 axllent/mailpit:v1.27.10 >/dev/null
 db_port=$(docker inspect -f '{{(index (index .NetworkSettings.Ports "5432/tcp") 0).HostPort}}' "$db")
 smtp_port=$(docker inspect -f '{{(index (index .NetworkSettings.Ports "1025/tcp") 0).HostPort}}' "$mail")
@@ -41,6 +41,7 @@ SMTP_HOST=127.0.0.1 SMTP_PORT="$smtp_port" PORT="$backend_port" SESSION_COOKIE_S
 backend_pid=$!
 export API_ORIGIN="http://127.0.0.1:$backend_port"
 export MAILPIT_API="http://127.0.0.1:$mail_port"
+export FINSTEP_E2E_DB_CONTAINER="$db"
 ready=false
 for attempt in {1..60}; do
   if ! kill -0 "$backend_pid" 2>/dev/null; then break; fi

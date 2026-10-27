@@ -32,7 +32,7 @@ public class SecurityConfiguration {
             .securityContext(context -> context.securityContextRepository(contexts))
             .authorizeHttpRequests(requests -> requests
                 .requestMatchers(HttpMethod.GET, "/actuator/health", "/actuator/health/liveness",
-                    "/actuator/health/readiness", "/api/v1/auth/csrf").permitAll()
+                    "/actuator/health/readiness", "/actuator/prometheus", "/api/v1/auth/csrf").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/register", "/api/v1/auth/login",
                     "/api/v1/auth/verify-email", "/api/v1/auth/resend-verification",
                     "/api/v1/auth/forgot-password", "/api/v1/auth/reset-password").permitAll()

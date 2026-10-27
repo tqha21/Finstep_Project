@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 import { readFile } from "node:fs/promises";
 import { password, registerAndVerify, login, createWallet, mailToken } from "./helpers";
 const replacement="Browser-Changed-Password-456!";

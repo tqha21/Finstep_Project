@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily Finstep encrypted backup schedule (UTC)
+
+[Timer]
+OnCalendar=*-*-* 00:15:00 UTC
+RandomizedDelaySec=15m
+Persistent=true
+Unit=finstep-backup.service
+
+[Install]
+WantedBy=timers.target

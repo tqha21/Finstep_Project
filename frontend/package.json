@@ -2,11 +2,13 @@
   "name": "finstep-web",
   "version": "0.1.0",
   "private": true,
-  "engines": {"node": ">=22 <25"},
+  "engines": {
+    "node": ">=22 <25"
+  },
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1",
-    "build": "next build",
-    "start": "next start --hostname 127.0.0.1",
+    "build": "next build && node scripts/prepare-standalone.mjs",
+    "start": "HOSTNAME=127.0.0.1 node .next/standalone/server.js",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --max-warnings 0",
     "test:e2e": "playwright test"

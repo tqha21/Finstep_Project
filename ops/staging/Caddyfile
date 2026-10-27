@@ -1,0 +1,26 @@
+{
+    admin off
+    auto_https disable_redirects
+}
+http://{$STAGING_HOST} {
+    redir https://{host}{uri} 308
+}
+https://{$STAGING_HOST} {
+    # internal for local rehearsal; use an ACME account email for public staging.
+    tls {$TLS_ISSUER}
+    header {
+        Strict-Transport-Security "max-age=31536000"
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        Referrer-Policy strict-origin-when-cross-origin
+        -Server
+    }
+    @management path /actuator /actuator/*
+    respond @management 404
+    handle /api/* {
+        reverse_proxy api-internal:8080
+    }
+    handle {
+        reverse_proxy web:3000
+    }
+}

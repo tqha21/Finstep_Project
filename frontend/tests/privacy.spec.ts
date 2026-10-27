@@ -1,4 +1,5 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "./fixtures";
+import type { Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { password, registerAndVerify, login, createWallet, mailToken } from "./helpers";
 async function mutate(page: Page, method: string, path: string, data: unknown, key?: string) {

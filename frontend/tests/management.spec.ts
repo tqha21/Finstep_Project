@@ -1,4 +1,5 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "./fixtures";
+import type { Page } from "@playwright/test";
 import { registerAndVerify, login, createWallet } from "./helpers";
 async function balances(page: Page) {
   const response = await page.request.get("/api/v1/wallets?includeArchived=true"); expect(response.ok()).toBe(true);

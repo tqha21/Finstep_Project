@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 import { registerAndVerify, login } from "./helpers";
 test.use({ timezoneId: "America/New_York" });
 test("dates: device timezone, DST gap, opening boundary, future rejection and account month", async ({ page, request }) => {

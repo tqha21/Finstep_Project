@@ -37,11 +37,12 @@ Kế hoạch tính theo tuần tương đối, 20–25 giờ/tuần. Lịch 19/1
 - [x] UI quản lý nhiều ví/danh mục, sửa/xóa/chuyển ví, bộ lọc lịch sử và hồ sơ; ngày tùy chọn theo giờ thiết bị, kiểm tra DST và báo cáo theo múi giờ tài khoản.
 - [x] Export toàn bộ dữ liệu JSON, xóa tài khoản bằng mật khẩu, thu hồi mọi phiên, trang quyền riêng tư và kiểm thử snapshot/rollback/E2E.
 - [x] Đổi mật khẩu bằng mật khẩu hiện tại, thu hồi phiên/token cũ; phản hồi riêng theo tài khoản, retry không trùng và tích hợp export/delete.
-- [ ] Các release gates còn lại (chính sách vận hành beta, staging, backup/restore, monitoring).
+- [x] Cấu hình staging Docker/Caddy HTTPS, trusted proxy và metrics private; diễn tập backup mã hóa/restore cách ly bảo toàn trạng thái tài khoản, CI Operations.
+- [ ] Staging Internet/SMTP thật, offsite backup và journal độc lập cho disaster recovery, alert delivery/uptime ngoài máy chủ, load test và chính sách beta.
 
 ## Sprint kỹ thuật tiếp theo
 
-1. Chuẩn bị staging SMTP/HTTPS, backup/restore và kiểm chứng giữ trạng thái xóa tài khoản khi restore.
-2. Monitoring, load test, chính sách vận hành/liên hệ hỗ trợ và release gates trước private beta.
+1. Chốt hạ tầng/domain/SMTP thật, offsite backup/retention và journal độc lập; checkpoint hiện tại mới hỗ trợ restore khi nguồn còn đọc được.
+2. Alert delivery/uptime ngoài máy chủ, load test, chính sách vận hành/liên hệ hỗ trợ và release gates trước private beta.
 
 Không triển khai ngân hàng/AI/PWA trước khi luồng nhập liệu, bảo mật và dữ liệu chính xác. Mỗi milestone chỉ hoàn thành sau khi có kiểm thử phù hợp.

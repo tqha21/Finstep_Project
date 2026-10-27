@@ -9,3 +9,11 @@
 **/playwright-report/
 **/tsconfig.tsbuildinfo
 **/next-env.d.ts
+
+**/*.cms
+**/*.cms.sha256
+**/*.key
+**/*.pem
+**/backup-data/
+**/__pycache__/
+artifacts/

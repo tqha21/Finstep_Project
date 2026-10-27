@@ -1,0 +1,117 @@
+name: finstep-staging
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+x-direct-internal: &direct-internal
+  NO_PROXY: localhost,127.0.0.1,db,api-internal,web,blackbox,prometheus,mail
+  no_proxy: localhost,127.0.0.1,db,api-internal,web,blackbox,prometheus,mail
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-finstep}
+      POSTGRES_USER: ${POSTGRES_USER:-finstep}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set a staging DB password}
+    volumes: [staging_postgres:/var/lib/postgresql/data]
+    networks: [private]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+    logging: *logging
+  api:
+    image: finstep-api:${IMAGE_TAG:-local}
+    build:
+      context: .
+      dockerfile: ops/staging/api.Dockerfile
+    environment:
+      <<: *direct-internal
+      SPRING_PROFILES_ACTIVE: staging
+      DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-finstep}
+      DB_USERNAME: ${POSTGRES_USER:-finstep}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?Set a staging DB password}
+      SESSION_COOKIE_SECURE: "true"
+      TRUSTED_PROXY_REGEX: ${TRUSTED_PROXY_REGEX:-10\.77\.0\.10}
+      SMTP_HOST: ${SMTP_HOST:?Set staging SMTP host}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:?Set staging SMTP user}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:?Set staging SMTP password}
+      SMTP_AUTH: ${SMTP_AUTH:-true}
+      SMTP_STARTTLS: ${SMTP_STARTTLS:-true}
+      MAIL_FROM: ${MAIL_FROM:?Set staging sender}
+    depends_on:
+      db: {condition: service_healthy}
+    networks:
+      private: {aliases: [api-internal]}
+      egress: {}
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+    logging: *logging
+  web:
+    image: finstep-web:${IMAGE_TAG:-local}
+    build:
+      context: .
+      dockerfile: ops/staging/web.Dockerfile
+    environment: *direct-internal
+    networks: [private]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+    logging: *logging
+  proxy:
+    image: caddy:2.10.2
+    environment:
+      <<: *direct-internal
+      STAGING_HOST: ${STAGING_HOST:?Set staging hostname}
+      TLS_ISSUER: ${TLS_ISSUER:?Set internal or ACME account email}
+    ports:
+      - "${STAGING_BIND_ADDRESS:-127.0.0.1}:${STAGING_HTTP_PORT:-8088}:80"
+      - "${STAGING_BIND_ADDRESS:-127.0.0.1}:${STAGING_HTTPS_PORT:-8443}:443"
+    volumes:
+      - ./ops/staging/Caddyfile:/etc/caddy/Caddyfile:ro
+      - staging_caddy:/data
+    networks:
+      private: {ipv4_address: "${CADDY_IP:-10.77.0.10}"}
+      egress: {}
+    depends_on: [api, web]
+    restart: unless-stopped
+    logging: *logging
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    environment: *direct-internal
+    command: [--config.file=/etc/prometheus/prometheus.yml, --storage.tsdb.retention.time=15d]
+    ports: ["127.0.0.1:${PROMETHEUS_PORT:-9091}:9090"]
+    volumes:
+      - ./ops/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./ops/monitoring/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - staging_metrics:/prometheus
+    networks: [private, egress]
+    restart: unless-stopped
+    logging: *logging
+  blackbox:
+    image: prom/blackbox-exporter:v0.27.0
+    environment: *direct-internal
+    command: [--config.file=/etc/blackbox.yml]
+    volumes: [./ops/monitoring/blackbox.yml:/etc/blackbox.yml:ro]
+    networks: [private]
+    restart: unless-stopped
+    logging: *logging
+networks:
+  private:
+    internal: true
+    ipam:
+      config: [{subnet: "${STAGING_SUBNET:-10.77.0.0/24}"}]
+  egress: {}
+volumes:
+  staging_postgres:
+  staging_caddy:
+  staging_metrics:
