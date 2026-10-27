@@ -1,0 +1,16 @@
+# Disposable test only: the main staging topology supplies TLS and security settings.
+services:
+  db:
+    cpus: 1.0
+    mem_limit: 512m
+  api:
+    cpus: 1.0
+    mem_limit: 768m
+    environment:
+      JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=65 -XX:+ExitOnOutOfMemoryError
+  web:
+    cpus: 0.5
+    mem_limit: 384m
+  proxy:
+    cpus: 0.5
+    mem_limit: 128m

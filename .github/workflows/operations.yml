@@ -1,4 +1,4 @@
-name: Staging HTTPS and recovery rehearsal
+name: Staging HTTPS, recovery and load regression
 on: [push, pull_request]
 permissions:
   contents: read
@@ -38,11 +38,22 @@ jobs:
           python3 scripts/test-staging-preflight.py
           python3 scripts/test-backup-store.py
           python3 scripts/test-alert-config.py
-          bash -n scripts/backup-db.sh scripts/restore-rehearsal.sh scripts/test-operations.sh
+          python3 scripts/test-load-runner.py
+          bash -n scripts/backup-db.sh scripts/restore-rehearsal.sh scripts/test-operations.sh scripts/test-load.sh
       - name: Test isolated HTTPS stack, alerts and encrypted recovery
         run: bash scripts/test-operations.sh
       - name: Test verified S3 publication and authenticated alert delivery
         run: bash scripts/test-reliability.sh
+      - name: Test bounded multi-user HTTPS load and exact ledger reconciliation
+        run: bash scripts/test-load.sh
+      - name: Retain sanitized load report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: load-report
+          path: artifacts/load/report.json
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Retain operational logs on failure
         if: failure()
         uses: actions/upload-artifact@v4
@@ -51,5 +62,6 @@ jobs:
           path: |
             artifacts/operations/
             artifacts/reliability/
+            artifacts/load/*.log
           if-no-files-found: ignore
           retention-days: 7

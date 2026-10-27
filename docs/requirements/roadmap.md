@@ -39,11 +39,12 @@ Kế hoạch tính theo tuần tương đối, 20–25 giờ/tuần. Lịch 19/1
 - [x] Đổi mật khẩu bằng mật khẩu hiện tại, thu hồi phiên/token cũ; phản hồi riêng theo tài khoản, retry không trùng và tích hợp export/delete.
 - [x] Cấu hình staging Docker/Caddy HTTPS, trusted proxy và metrics private; diễn tập backup mã hóa/restore cách ly bảo toàn trạng thái tài khoản, CI Operations.
 - [x] CLI S3 upload/readback/receipt/fetch, worker backup metrics; Alertmanager/webhook Bearer có retry và firing/resolved, kiểm thử bằng S3/receiver riêng cục bộ.
-- [ ] Staging Internet/SMTP/S3/receiver thật, retention/IAM ngoài máy chủ, journal/authority độc lập cho disaster recovery, uptime ngoài máy chủ, load test và chính sách beta.
+- [x] Load regression HTTPS cục bộ: 8 worker/8 tài khoản, 16.000 lịch sử, 1.392 request, contention/replay và đối chiếu số dư; resource/latency/error gates, báo cáo CI và runbook.
+- [ ] Staging Internet/SMTP/S3/receiver thật, retention/IAM ngoài máy chủ, journal/authority độc lập cho disaster recovery, uptime ngoài máy chủ, tải/soak trên staging thật và chính sách beta.
 
 ## Sprint kỹ thuật tiếp theo
 
 1. Chốt hạ tầng/domain/SMTP/S3/receiver thật và IAM/retention; journal/authority DR còn là ADR proposed, restore vẫn yêu cầu source đọc được.
-2. Alert delivery/uptime ngoài máy chủ, load test, chính sách vận hành/liên hệ hỗ trợ và release gates trước private beta.
+2. Alert delivery/uptime ngoài máy chủ, chạy load regression và bổ sung soak/capacity theo cấu hình staging thật, chính sách vận hành/liên hệ hỗ trợ và release gates trước private beta.
 
 Không triển khai ngân hàng/AI/PWA trước khi luồng nhập liệu, bảo mật và dữ liệu chính xác. Mỗi milestone chỉ hoàn thành sau khi có kiểm thử phù hợp.

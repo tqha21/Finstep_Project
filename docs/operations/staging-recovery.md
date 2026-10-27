@@ -56,7 +56,7 @@ Prometheus scrape private API metrics, blackbox probe API readiness (gồm DB) v
 
 Dữ liệu Prometheus giữ 15 ngày trong volume riêng. Docker JSON logs giới hạn 10 MB × 3 file/service, không cam kết số ngày. Không đưa secrets/nội dung tài chính vào log hỗ trợ. Backup hiện chỉ bao gồm PostgreSQL, không bao gồm metrics, certificate Caddy hoặc file cấu hình secrets; các phần này cần quy trình riêng.
 
-**Đã có profile Alertmanager và diễn tập webhook Bearer/retry/firing/resolved cục bộ**; xem [offsite/alerting](offsite-alerting.md). Chưa có receiver bên ngoài hoặc người trực nhận cảnh báo, chưa có uptime/certificate probe từ bên ngoài máy chủ, chưa đo tải hay đặt SLO theo người dùng thật. Nếu cả máy chủ hỏng, Prometheus trên cùng máy không gửi được cảnh báo. Đây vẫn là release gate trước beta, không coi dashboard local là giám sát vận hành hoàn chỉnh.
+**Đã có profile Alertmanager và diễn tập webhook Bearer/retry/firing/resolved cục bộ**; xem [offsite/alerting](offsite-alerting.md). Đã có [load regression HTTPS cục bộ](load-testing.md) với resource limits và đối chiếu dữ liệu. Chưa có receiver bên ngoài hoặc người trực nhận cảnh báo, chưa có uptime/certificate probe từ bên ngoài máy chủ, chưa xác nhận capacity/SLO trên staging hay theo người dùng thật. Nếu cả máy chủ hỏng, Prometheus trên cùng máy không gửi được cảnh báo. Đây vẫn là release gate trước beta, không coi dashboard local là giám sát vận hành hoàn chỉnh.
 
 ## Backup mã hóa
 

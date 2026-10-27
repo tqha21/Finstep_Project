@@ -77,6 +77,7 @@ Nếu home chỉ đọc trong cloud, đặt `npm_config_cache=/workspace/.cache/
 - Smoke test thực tế qua SMTP Mailpit đã xác minh đăng ký → email → xác minh → đăng nhập → hồ sơ → đăng xuất. Email chỉ gửi vào hộp thư thử nghiệm cục bộ. Bản chạy hiện tại cũng đã smoke test tạo ví/số dư, danh mục mặc định không trùng và lưu trữ ví. Smoke test ledger cũng đã xác minh thu/chi/chuyển ví, replay, cursor, sửa/xóa và đối chiếu số dư. Bản JAR cũng đã smoke test báo cáo tháng, cảnh báo ngân sách 80%, đổi múi giờ và tải CSV có xác thực.
 - Frontend: TypeScript, ESLint, build production và **11/11 browser E2E đạt**; bao phủ tài khoản, dashboard, ví/danh mục, thu/chi/chuyển ví, sửa/xóa, ngân sách, CSV, retry, phân trang, DST/múi giờ, quyền riêng tư, export/xóa tài khoản nhiều phiên, đổi mật khẩu, phản hồi và mobile. Xem kết quả thực thi trong tài liệu frontend.
 - Operations: HTTPS với CA được xác thực, Secure cookie, chống giả header IP, actuator không lộ qua proxy; backup AES-GCM/restore vào database cách ly giữ đúng số dư và trạng thái xóa/mật khẩu/khóa tài khoản. Prometheus/probe thật và kiểm thử rule đạt; 7/7 preflight guards đạt; 7/7 backup-store và 4/4 alert-config guards đạt. Diễn tập S3 roundtrip/decrypt, từ chối corruption/partial và delivery Bearer/retry/firing/resolved đã đạt. Chi tiết và giới hạn recovery xem runbook.
+- Load regression: HTTPS riêng, 8 worker/8 tài khoản, 16.000 giao dịch lịch sử và 1.392 request đo được; đối chiếu số dư/báo cáo và replay đạt. Có resource limits, latency/error/restart gates và báo cáo JSON trên CI. Đây là phép thử ngắn cục bộ, chưa chứng minh capacity/SLO production; xem [kịch bản và giới hạn](docs/operations/load-testing.md).
 - CI đã khai báo trên GitHub Actions; kết quả CI trên GitHub cần xem riêng sau khi push.
 
 Dừng backend trước khi đóng gói lại JAR đang chạy; khởi động lại bằng JAR mới sau khi build thành công.
@@ -96,6 +97,7 @@ Dừng backend trước khi đóng gói lại JAR đang chạy; khởi động l
 - [Frontend và kiểm thử trình duyệt](docs/architecture/frontend.md)
 - [Staging HTTPS, monitoring và backup/restore](docs/operations/staging-recovery.md)
 - [S3 verified publication và Alertmanager](docs/operations/offsite-alerting.md)
+- [Kiểm thử tải HTTPS và ngưỡng regression](docs/operations/load-testing.md)
 - [ADR disaster recovery của trạng thái tài khoản](docs/decisions/001-disaster-recovery-account-state.md)
 
 Tên sản phẩm đang dùng SmartExpense theo bản kế hoạch; repository giữ tên Finstep_Project. Chưa publish hoặc deploy production. Lịch sử triển khai được ghi trong Git.
