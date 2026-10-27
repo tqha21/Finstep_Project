@@ -1,0 +1,10 @@
+# Copy outside Git with mode 0600. Use a pre-existing bucket and scoped IAM credentials.
+[offsite]
+type = s3
+provider = AWS
+env_auth = false
+region = ap-southeast-1
+access_key_id = replace-with-prefix-scoped-access-key
+secret_access_key = replace-with-prefix-scoped-secret
+# For another S3-compatible provider set provider=Other and a verified HTTPS origin:
+# endpoint = https://s3.provider.example.com

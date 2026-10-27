@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily verified Finstep offsite backup (UTC)
+
+[Timer]
+OnCalendar=*-*-* 00:15:00 UTC
+RandomizedDelaySec=15m
+Persistent=true
+Unit=finstep-offsite-backup.service
+
+[Install]
+WantedBy=timers.target

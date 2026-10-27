@@ -1,0 +1,7 @@
+groups:
+  - name: local-delivery-canary
+    rules:
+      - alert: FinstepDeliveryCanary
+        expr: finstep_delivery_canary == 1
+        labels: {severity: info}
+        annotations: {summary: "Local fixture delivery test"}

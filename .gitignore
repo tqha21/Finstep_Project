@@ -17,3 +17,10 @@
 **/backup-data/
 **/__pycache__/
 artifacts/
+
+**/rclone.conf
+**/alertmanager.generated.json
+**/alert-webhook-token
+**/alert-webhook-url
+**/alertmanager-data/
+**/backup-metrics/

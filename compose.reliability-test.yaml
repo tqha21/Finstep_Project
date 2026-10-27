@@ -1,0 +1,36 @@
+services:
+  alertmanager:
+    extends: {file: compose.staging.yaml, service: alertmanager}
+  backup-metrics:
+    extends: {file: compose.staging.yaml, service: backup-metrics}
+  prometheus:
+    extends: {file: compose.staging.yaml, service: prometheus}
+    volumes:
+      - ./ops/testing/prometheus.reliability.yml:/etc/prometheus/prometheus.yml:ro
+      - ./ops/testing/reliability-alerts.yml:/etc/prometheus/reliability-alerts.yml:ro
+  receiver:
+    image: python:3.12-alpine
+    user: "${ALERTMANAGER_UID}:${ALERTMANAGER_GID}"
+    command: [python, /app/receiver.py]
+    environment: {PYTHONDONTWRITEBYTECODE: "1"}
+    volumes:
+      - ./ops/testing/alert_receiver.py:/app/receiver.py:ro
+      - ${ALERTMANAGER_TOKEN_FILE}:/run/secrets/alert-webhook-token:ro
+    ports: ["127.0.0.1::8080"]
+    networks: [private, egress]
+  objectstore:
+    # A disposable S3 compatibility fixture, never the proposed production offsite location.
+    image: dxflrs/garage:v2.1.0
+    command: [/garage, server]
+    volumes:
+      - ${GARAGE_CONFIG_FILE}:/etc/garage.toml:ro
+      - fixture_objects:/var/lib/garage
+    ports: ["127.0.0.1::3900"]
+    networks: [private, egress]
+networks:
+  private:
+    internal: true
+  egress: {}
+volumes:
+  fixture_objects:
+  staging_metrics:

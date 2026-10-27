@@ -5,8 +5,8 @@ x-logging: &logging
     max-size: "10m"
     max-file: "3"
 x-direct-internal: &direct-internal
-  NO_PROXY: localhost,127.0.0.1,db,api-internal,web,blackbox,prometheus,mail
-  no_proxy: localhost,127.0.0.1,db,api-internal,web,blackbox,prometheus,mail
+  NO_PROXY: localhost,127.0.0.1,db,api-internal,web,blackbox,prometheus,mail,alertmanager,receiver,backup-metrics
+  no_proxy: localhost,127.0.0.1,db,api-internal,web,blackbox,prometheus,mail,alertmanager,receiver,backup-metrics
 services:
   db:
     image: postgres:17
@@ -102,6 +102,28 @@ services:
     environment: *direct-internal
     command: [--config.file=/etc/blackbox.yml]
     volumes: [./ops/monitoring/blackbox.yml:/etc/blackbox.yml:ro]
+    networks: [private]
+    restart: unless-stopped
+    logging: *logging
+  alertmanager:
+    image: prom/alertmanager:v0.28.1
+    profiles: [alerting]
+    user: "${ALERTMANAGER_UID:-1000}:${ALERTMANAGER_GID:-1000}"
+    environment: *direct-internal
+    command: [--config.file=/etc/alertmanager/config.yml, --storage.path=/alertmanager]
+    volumes:
+      - ${ALERTMANAGER_CONFIG_FILE:-./ops/monitoring/alertmanager.disabled.yml}:/etc/alertmanager/config.yml:ro
+      - ${ALERTMANAGER_TOKEN_FILE:-./ops/monitoring/alert-token.empty.example}:/run/secrets/alert-webhook-token:ro
+      - ${ALERTMANAGER_STATE_DIR:-./ops/staging/alertmanager-data}:/alertmanager
+    networks: [private, egress]
+    restart: unless-stopped
+    logging: *logging
+  backup-metrics:
+    image: prom/node-exporter:v1.9.1
+    profiles: [offsite]
+    command: [--collector.disable-defaults, --collector.textfile, --collector.textfile.directory=/metrics]
+    volumes:
+      - ${BACKUP_METRICS_DIR:-./ops/staging/backup-metrics}:/metrics:ro
     networks: [private]
     restart: unless-stopped
     logging: *logging

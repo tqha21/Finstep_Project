@@ -1,0 +1,5 @@
+# No external receiver until an operator generates and reviews a private configuration.
+route:
+  receiver: unconfigured
+receivers:
+  - name: unconfigured

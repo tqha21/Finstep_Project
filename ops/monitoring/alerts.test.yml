@@ -31,3 +31,33 @@ tests:
       - eval_time: 2m
         alertname: FinstepReadinessFailed
         exp_alerts: []
+  - interval: 15s
+    input_series:
+      - series: 'finstep_backup_offsite_last_attempt_success{job="finstep-backup",instance="metrics:9100"}'
+        values: '0x12'
+    alert_rule_test:
+      - eval_time: 2m
+        alertname: FinstepOffsiteBackupFailed
+        exp_alerts:
+          - exp_labels: {job: finstep-backup, instance: "metrics:9100", severity: critical}
+            exp_annotations: {summary: "Finstep offsite backup attempt failed"}
+  - interval: 15s
+    input_series:
+      - series: 'finstep_backup_offsite_last_success_timestamp_seconds{job="finstep-backup",instance="metrics:9100"}'
+        values: '0x6500'
+    alert_rule_test:
+      - eval_time: 27h
+        alertname: FinstepOffsiteBackupOverdue
+        exp_alerts:
+          - exp_labels: {job: finstep-backup, instance: "metrics:9100", severity: warning}
+            exp_annotations: {summary: "Finstep has no verified offsite backup in 26 hours"}
+  - interval: 15s
+    input_series:
+      - series: 'up{job="finstep-backup",instance="metrics:9100"}'
+        values: '0x80'
+    alert_rule_test:
+      - eval_time: 16m
+        alertname: FinstepBackupStatusMissing
+        exp_alerts:
+          - exp_labels: {job: finstep-backup, severity: warning}
+            exp_annotations: {summary: "Finstep backup status metrics are missing"}

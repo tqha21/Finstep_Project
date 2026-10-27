@@ -29,17 +29,27 @@ jobs:
         run: |
           npm ci --no-fund
           npm run build
+      - name: Install S3 transfer CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes rclone
       - name: Validate staging configuration guards
         run: |
           python3 scripts/test-staging-preflight.py
+          python3 scripts/test-backup-store.py
+          python3 scripts/test-alert-config.py
           bash -n scripts/backup-db.sh scripts/restore-rehearsal.sh scripts/test-operations.sh
       - name: Test isolated HTTPS stack, alerts and encrypted recovery
         run: bash scripts/test-operations.sh
+      - name: Test verified S3 publication and authenticated alert delivery
+        run: bash scripts/test-reliability.sh
       - name: Retain operational logs on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: operations-logs
-          path: artifacts/operations/
+          path: |
+            artifacts/operations/
+            artifacts/reliability/
           if-no-files-found: ignore
           retention-days: 7

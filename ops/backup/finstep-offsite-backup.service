@@ -1,0 +1,18 @@
+[Unit]
+Description=Encrypted Finstep backup with verified S3 publication
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/finstep
+UMask=0077
+# Review paths, container and S3 prefix. Credential values are read from a private config file.
+ExecStart=/usr/bin/python3 /opt/finstep/scripts/backup_store.py --config /secure/finstep/rclone.conf --remote offsite:REPLACE_BUCKET/finstep-staging backup finstep-staging-db-1 /var/lib/finstep/backups /secure/finstep/backup-recipient.crt --metrics-file /var/lib/finstep/backup-metrics/offsite.prom
+RuntimeMaxSec=2h
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/finstep/backups /var/lib/finstep/backup-metrics

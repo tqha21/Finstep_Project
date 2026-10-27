@@ -1,0 +1,10 @@
+{
+  "Rules": [{
+    "ID": "review-before-applying-finstep-retention",
+    "Status": "Enabled",
+    "Filter": {"Prefix": "finstep-staging/"},
+    "Expiration": {"Days": 30},
+    "NoncurrentVersionExpiration": {"NoncurrentDays": 30},
+    "AbortIncompleteMultipartUpload": {"DaysAfterInitiation": 7}
+  }]
+}

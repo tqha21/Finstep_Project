@@ -21,3 +21,18 @@ groups:
         for: 2m
         labels: {severity: warning}
         annotations: {summary: "Finstep database connections are waiting"}
+      - alert: FinstepOffsiteBackupFailed
+        expr: finstep_backup_offsite_last_attempt_success{job="finstep-backup"} == 0
+        for: 1m
+        labels: {severity: critical}
+        annotations: {summary: "Finstep offsite backup attempt failed"}
+      - alert: FinstepOffsiteBackupOverdue
+        expr: time() - finstep_backup_offsite_last_success_timestamp_seconds{job="finstep-backup"} > 93600
+        for: 5m
+        labels: {severity: warning}
+        annotations: {summary: "Finstep has no verified offsite backup in 26 hours"}
+      - alert: FinstepBackupStatusMissing
+        expr: absent(finstep_backup_offsite_last_success_timestamp_seconds{job="finstep-backup"})
+        for: 15m
+        labels: {severity: warning}
+        annotations: {summary: "Finstep backup status metrics are missing"}
