@@ -8,9 +8,9 @@
 
 ## Tệp xuất phiên bản 1
 
-Envelope có `schemaVersion: 1`, `exportedAt`, `account` và sáu collection: `wallets`, `categories`, `transactions`, `transfers`, `budgets`, `budgetItems`. Tiền là chuỗi số nguyên VND; timestamp có offset, month là ngày đầu tháng. Tham chiếu UUID giữa các collection được giữ lại.
+Envelope có `schemaVersion: 1`, `exportedAt`, `account` và bảy collection: `wallets`, `categories`, `transactions`, `transfers`, `budgets`, `budgetItems`, `feedback`. Tiền là chuỗi số nguyên VND; timestamp có offset, month là ngày đầu tháng. Tham chiếu UUID giữa các collection được giữ lại.
 
-`account` gồm id/email/fullName/currency/timezone/emailVerifiedAt/createdAt. Ví gồm số dư ban đầu, effectiveAt, số dư hiện tại, loại, trạng thái archive và ngày tạo. Các khoản thu chi/chuyển ví gồm cả `deletedAt` và ghi chú nguyên gốc; budgets/items gồm month và hạn mức. Không lọc mất dữ liệu archive, không giới hạn vào tháng hiện tại hoặc 10.000 dòng như CSV. CSV là báo cáo thu/chi đã lọc, JSON là bản sao toàn bộ ghi chép; chưa có chức năng nhập lại.
+`account` gồm id/email/fullName/currency/timezone/emailVerifiedAt/createdAt. Ví gồm số dư ban đầu, effectiveAt, số dư hiện tại, loại, trạng thái archive và ngày tạo. Các khoản thu chi/chuyển ví gồm cả `deletedAt` và ghi chú nguyên gốc; budgets/items gồm month và hạn mức. Collection feedback gồm id/type/message/createdAt, không có khóa/hash retry. Đây là mở rộng cộng thêm của schemaVersion 1. Không lọc mất dữ liệu archive, không giới hạn vào tháng hiện tại hoặc 10.000 dòng như CSV. CSV là báo cáo thu/chi đã lọc, JSON là bản sao toàn bộ ghi chép; chưa có chức năng nhập lại.
 
 Không đưa password/hash, auth_version, mã xác minh/reset (kể cả hash), cookie/thuộc tính phiên, bucket rate limit, khóa/hash idempotency vào tệp.
 
@@ -22,7 +22,7 @@ Không bật tự đóng nội dung JSON khi lỗi. Nếu stream lỗi, tệp th
 
 Khóa row users FOR UPDATE, kiểm tra ACTIVE/email_verified_at/auth_version và mật khẩu bên trong cùng transaction. Khóa cùng chủ tài khoản như ledger/budget; FK key-share của các thao tác tạo ví/danh mục cũng xếp hàng với khóa này.
 
-Xóa theo thứ tự FK: budget_items → budgets → idempotency_requests → transactions → transfers → opening_balances → wallets → categories → identity_tokens; xóa spring_session theo principal UUID (attributes cascade), rồi users. Dọn các bucket theo email/tài khoản. Không sửa các FK tài chính thành cascade; không đụng bảng/người dùng khác. Lỗi DB ở bất cứ bước nào rollback toàn bộ, gồm dữ liệu và session. Mỗi request kiểm tra sự tồn tại của users; đăng nhập đang chạy cạnh tranh dù lưu một phiên muộn cũng không có quyền đọc/ghi sau khi tài khoản đã mất.
+Xóa theo thứ tự FK: feedback → budget_items → budgets → idempotency_requests → transactions → transfers → opening_balances → wallets → categories → identity_tokens; xóa spring_session theo principal UUID (attributes cascade), rồi users. Dọn các bucket theo email/tài khoản, kể cả feedback/password-change. Không sửa các FK tài chính thành cascade; không đụng bảng/người dùng khác. Lỗi DB ở bất cứ bước nào rollback toàn bộ, gồm dữ liệu và session. Mỗi request kiểm tra sự tồn tại của users; đăng nhập đang chạy cạnh tranh dù lưu một phiên muộn cũng không có quyền đọc/ghi sau khi tài khoản đã mất.
 
 Bộ đếm IP chia sẻ không xóa theo tài khoản. Email đã có trong Mailpit/SMTP, tệp download, logs hoặc bản sao do người vận hành tạo ngoài DB không thể bị thu hồi bằng endpoint này. Chưa có lịch giữ/xóa bản sao lưu production; không tuyên bố xóa các bản sao ngoài hệ thống. Release gate staging/backup/restore phải xác định cả cách tránh khôi phục lại tài khoản đã xóa.
 

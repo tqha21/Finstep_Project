@@ -70,7 +70,7 @@ test("privacy: lost deletion response reports uncertainty without claiming failu
     await route.fulfill({ status: 503, contentType: "application/problem+json", body: JSON.stringify({ detail: "Mất phản hồi sau khi xóa." }) });
   });
   await page.getByRole("button", { name: "Xóa tài khoản", exact: true }).click();
-  await page.getByLabel("Mật khẩu hiện tại", { exact: true }).fill(password); await page.getByLabel("Nhập XÓA TÀI KHOẢN", { exact: true }).fill("XÓA TÀI KHOẢN");
+  await page.getByRole("dialog").getByLabel("Mật khẩu hiện tại", { exact: true }).fill(password); await page.getByLabel("Nhập XÓA TÀI KHOẢN", { exact: true }).fill("XÓA TÀI KHOẢN");
   await page.getByRole("button", { name: "Xóa vĩnh viễn", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Chưa xác nhận được kết quả xóa", exact: true })).toBeVisible(); expect(commits).toBe(1);
   expect((await page.request.get("/api/v1/me")).status()).toBe(401);

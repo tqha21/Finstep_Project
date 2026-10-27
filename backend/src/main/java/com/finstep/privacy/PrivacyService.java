@@ -76,6 +76,10 @@ public class PrivacyService {
                 SELECT jsonb_build_object('id',id,'budgetId',budget_id,'categoryId',category_id,'limitAmount',limit_amount::text)
                 FROM budget_items WHERE user_id=? ORDER BY budget_id,id
                 """, owner.id());
+            rows(generator, "feedback", """
+                SELECT jsonb_build_object('id',id,'type',type,'message',message,'createdAt',created_at)
+                FROM feedback WHERE user_id=? ORDER BY created_at,id
+                """, owner.id());
             generator.writeEndObject();
         }
     }
@@ -106,14 +110,14 @@ public class PrivacyService {
         if (password.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72 || !passwords.matches(password, account.hash()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mật khẩu hiện tại không đúng.");
         // Explicit order keeps existing restrictive financial FKs; no global cascade relaxation.
-        for (String table : new String[]{"budget_items", "budgets", "idempotency_requests", "transactions",
+        for (String table : new String[]{"feedback", "budget_items", "budgets", "idempotency_requests", "transactions",
                 "transfers", "opening_balances", "wallets", "categories", "identity_tokens"}) {
             jdbc.update("DELETE FROM " + table + " WHERE user_id=?", owner.id());
         }
         jdbc.update("DELETE FROM spring_session WHERE principal_name=?", owner.id().toString());
         jdbc.update("DELETE FROM users WHERE id=?", owner.id());
         for (String bucket : new String[]{"register:" + account.email(), "login:" + account.email(),
-                "VERIFY:" + account.email(), "RESET:" + account.email(), "export:" + owner.id(), "delete:" + owner.id()}) {
+                "VERIFY:" + account.email(), "RESET:" + account.email(), "export:" + owner.id(), "delete:" + owner.id(), "password-change:" + owner.id(), "feedback:" + owner.id()}) {
             jdbc.update("DELETE FROM auth_rate_limits WHERE bucket_hash=?", TokenHasher.hash(bucket));
         }
     }

@@ -43,7 +43,7 @@ export async function downloadPersonalData(): Promise<void> {
   // Do not offer a truncated or partial JSON document as a successful export.
   try {
     const data = JSON.parse(await blob.text());
-    if (data.schemaVersion !== 1 || !data.account?.id || !["wallets", "categories", "transactions", "transfers", "budgets", "budgetItems"].every(key => Array.isArray(data[key]))) throw new Error("Incomplete export");
+    if (data.schemaVersion !== 1 || !data.account?.id || !["wallets", "categories", "transactions", "transfers", "budgets", "budgetItems", "feedback"].every(key => Array.isArray(data[key]))) throw new Error("Incomplete export");
   } catch { throw new Error("Chưa tải được tệp dữ liệu đầy đủ. Vui lòng thử lại."); }
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a"); anchor.href = url; anchor.download = "finstep-personal-data.json";

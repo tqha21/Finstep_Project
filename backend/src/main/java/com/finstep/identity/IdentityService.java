@@ -124,6 +124,25 @@ public class IdentityService {
         jdbc.update("UPDATE identity_tokens SET consumed_at=now() WHERE user_id=? AND purpose=? AND consumed_at IS NULL",user,purpose);
     }
 
+    @Transactional
+    public void changePassword(UserPrincipal owner, String currentPassword, String newPassword) {
+        validatePassword(newPassword);
+        var rows = jdbc.query("""
+            SELECT password_hash FROM users WHERE id=? AND status='ACTIVE'
+                AND email_verified_at IS NOT NULL AND auth_version=? FOR UPDATE
+            """, (rs, n) -> rs.getString(1), owner.id(), owner.authVersion());
+        if (rows.isEmpty()) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        if (currentPassword.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72
+                || !passwords.matches(currentPassword, rows.getFirst()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mật khẩu hiện tại không đúng.");
+        if (currentPassword.equals(newPassword))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mật khẩu mới phải khác mật khẩu hiện tại.");
+        jdbc.update("UPDATE users SET password_hash=?,auth_version=auth_version+1 WHERE id=?",
+            passwords.encode(newPassword), owner.id());
+        jdbc.update("UPDATE identity_tokens SET consumed_at=now() WHERE user_id=? AND purpose='RESET' AND consumed_at IS NULL", owner.id());
+        jdbc.update("DELETE FROM spring_session WHERE principal_name=?", owner.id().toString());
+    }
+
     public Account account(UUID id) {
         var accounts = jdbc.query("SELECT id,email,full_name,timezone FROM users WHERE id=? AND status='ACTIVE' AND email_verified_at IS NOT NULL",
             (rs,n) -> new Account(rs.getObject("id",UUID.class),rs.getString("email"),rs.getString("full_name"),rs.getString("timezone")),id);

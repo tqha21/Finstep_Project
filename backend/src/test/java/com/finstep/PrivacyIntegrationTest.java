@@ -40,7 +40,7 @@ class PrivacyIntegrationTest {
     @Autowired PrivacyService privacy;
     static final String PASSWORD = "Privacy-Test-Password-123!";
     static final String HASH = new BCryptPasswordEncoder(4).encode(PASSWORD);
-    static final String[] OWNED = {"wallets", "categories", "opening_balances", "transactions", "transfers", "budgets", "budget_items", "identity_tokens", "idempotency_requests"};
+    static final String[] OWNED = {"wallets", "categories", "opening_balances", "transactions", "transfers", "budgets", "budget_items", "identity_tokens", "idempotency_requests", "feedback"};
     @BeforeEach void limits() { jdbc.update("DELETE FROM auth_rate_limits"); }
     class Browser {
         final CookieManager cookies = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
@@ -73,6 +73,7 @@ class PrivacyIntegrationTest {
             jdbc.update("INSERT INTO budget_items(user_id,budget_id,category_id,limit_amount) VALUES(?,?,?,100)",id,budget,category);
             jdbc.update("INSERT INTO identity_tokens(user_id,token_hash,purpose,expires_at) VALUES(?,?,'RESET',now()+interval '1 hour')",id,TokenHasher.hash(token));
             jdbc.update("INSERT INTO idempotency_requests(user_id,key,request_hash,resource_id) VALUES(?,'private-retry-key',?,?)",id,TokenHasher.hash("request"),UUID.randomUUID());
+            jdbc.update("INSERT INTO feedback(user_id,request_key,request_hash,type,message) VALUES(?,'fixture',?,'OTHER','Private feedback fixture')",id,TokenHasher.hash("fixture"));
             login(this);
         }
         void tx(String amount, String note, boolean deleted) {
@@ -103,6 +104,7 @@ class PrivacyIntegrationTest {
         assertThat(data.get("transactions").findValuesAsText("note")).contains("Formula =1+1, \"ghi chú\"\nTiếng Việt");
         assertThat(data.get("transfers").size()).isEqualTo(2);
         assertThat(data.get("budgetItems").get(0).get("limitAmount").asText()).isEqualTo("100");
+        assertThat(data.get("feedback").size()).isEqualTo(1);
         assertThat(data.get("budgets").get(0).get("month").asText()).isEqualTo("2026-01-01");
         assertThat(response.body()).doesNotContain(stranger.email,stranger.id.toString(),"FOREIGN_PRIVATE_NOTE",HASH,PASSWORD,"password", "token", "authVersion", "spring_session", "private-retry-key");
         for(int i=0;i<2;i++) assertThat(user.get("/api/v1/me/export").statusCode()).isEqualTo(200);
