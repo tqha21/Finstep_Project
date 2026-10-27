@@ -34,6 +34,10 @@ Nếu mất phản hồi sau DELETE hoặc nhận 401, kiểm tra GET /me: khi p
 
 `/privacy` mô tả cơ chế hiện có và giới hạn bản phát triển, có thể đọc từ landing, đăng ký hoặc hồ sơ. Chưa phải chính sách vận hành hoàn chỉnh cho beta: còn thiếu đầu mối hỗ trợ, nhà cung cấp hosting/SMTP thực tế, retention/backup và quy trình xử lý yêu cầu ngoài ứng dụng.
 
+## Báo cáo beta nội bộ
+
+Đã có [CLI cohort tổng hợp chỉ đọc](../operations/beta-metrics.md), chưa cài reader role trên database hiện hữu hoặc chạy với dữ liệu người dùng thật. Công cụ dùng metadata tạo/xác minh tài khoản, ví và thời điểm tạo thu/chi/chuyển ví; không tạo event/identity riêng hoặc gửi tới bên thứ ba. Role giới hạn cột, không đọc email, mật khẩu, số tiền, ghi chú, session/token; chỉ aggregate đã suppression được trả khỏi query. Xóa tài khoản loại dữ liệu khỏi lần report tiếp theo, có survivorship bias; report cũ được người vận hành lưu ngoài DB không tự bị thu hồi. Trước khi dùng cho beta thật, công bố mục đích tổng hợp trong chính sách và thực hiện quy trình hạn chế truy cập/xóa report đã lưu, không coi suppression là bảo đảm ẩn danh.
+
 ## Kiểm thử
 
 PrivacyIntegrationTest dùng PostgreSQL thật: hai tenant, field whitelist, tiền nguyên lớn, ghi chú Unicode/quote/newline, archive/deleted, thiếu session/CSRF, sai mật khẩu/xác nhận/owner override, throttle, xóa toàn bộ/session/cookie cũ, rollback bằng trigger lỗi, snapshot stream khi cập nhật song song, và ledger tạo cạnh tranh với xóa. Browser E2E dùng SMTP/API/DB tách riêng: tải JSON, từ chối stream bị cắt, hủy/sai mật khẩu, xóa nhiều phiên, mã reset cũ vô hiệu, đăng nhập lại bị từ chối và mất phản hồi sau commit.

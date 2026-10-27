@@ -30,6 +30,8 @@ Mobile-first; thêm giao dịch dễ tiếp cận, input số tiền rõ ràng, 
 
 Theo dõi activation (tạo ví + giao dịch), D7 retention và thời gian tới giao dịch đầu. Event không chứa email, số tiền hay ghi chú. Mục tiêu ban đầu activation ≥40%, D7 ≥30%; phải đo thực tế.
 
+Đã có [CLI đo beta bằng cohort tuần](../operations/beta-metrics.md), không tạo bảng event hoặc tích hợp tracking bên ngoài. Phiên bản 1 đo activation trong 168 giờ và D7 bằng hành động tạo thu/chi/chuyển ví theo ngày Bangkok, với mẫu số đã trưởng thành và suppression. Đây là định nghĩa vận hành ban đầu cần xác nhận qua discovery; chưa đo lần mở app hoặc có kết quả beta thật.
+
 ## Release gates
 
 Kiểm thử thu/chi/chuyển ví và chống IDOR; authentication hoàn chỉnh; HTTPS; backup và restore đã thử; xuất/xóa dữ liệu; monitoring; không còn lỗi nghiêm trọng ảnh hưởng tiền hoặc riêng tư; luồng mobile hoạt động. Chưa gate nào được suy ra từ việc schema chạy thành công.
